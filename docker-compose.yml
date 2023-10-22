@@ -1,0 +1,128 @@
+version: '3.8'
+
+services:
+  dns:
+    image: ubuntu/bind9
+    restart: always
+    volumes:
+      - ./bind9/named.conf.local:/etc/bind/named.conf.local
+      - ./bind9/zones:/etc/bind/zones
+    ports:
+      - "53:53"
+      - "53:53/udp"
+      - "953:953"
+    networks:
+      - server-frontend-network
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./api:/var/www/html
+      - ./api/.env.development:/var/www/html/.env
+      - ./nginx/dev.conf:/etc/nginx/nginx.conf
+      - ./.secrets/student-attendance.internal.crt:/etc/certs/student-attendance.internal/student-attendance.internal.crt
+      - ./.secrets/student-attendance.internal.key:/etc/certs/student-attendance.internal/student-attendance.internal.key
+    depends_on:
+      - dns
+      - api_ws
+      - admin_frontend
+      - api
+    networks:
+      - server-frontend-network
+      - server-backend-network
+
+  api_ws:
+    image: node:20-alpine3.17
+    build:
+      context: ./api-ws
+      dockerfile: Dockerfile
+    volumes:
+      - ./api-ws:/home/app
+    ports:
+      - "3000:3000"
+    working_dir: /home/app
+    command: node /home/app/index.mjs
+    networks:
+      - server-backend-network
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    tty: true
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+    environment:
+      - COMPOSER_ALLOW_SUPERUSER=1
+    networks:
+      - server-backend-network
+    volumes:
+      - ./.secrets/oauth-private.key:/var/www/html/storage/oauth-private.key
+      - ./.secrets/oauth-public.key:/var/www/html/storage/oauth-public.key
+
+  admin_frontend:
+    image: node:20-alpine3.17
+    build:
+      context: ./api-ws
+      dockerfile: Dockerfile
+    volumes:
+      - ./admin-frontend:/home/app/
+    working_dir: /home/app
+    command: "npm run dev"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+      - api_ws
+    networks:
+      - server-backend-network
+
+  sms_service:
+    image: python:3-alpine
+    build:
+      context: ./sms-server
+      dockerfile: Dockerfile
+    volumes:
+      - ./sms-server:/home/app
+    working_dir: /home/app
+    command: "python server.py"
+    depends_on:
+      - redis
+    networks:
+      - server-backend-network
+
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=student_attendance_system
+      - POSTGRES_PASSWORD=C54uxdBdfbp4
+      - POSTGRES_DB=student_attendance_system_dev
+    restart: always
+    networks:
+      - server-backend-network
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - server-backend-network
+
+volumes:
+  postgres_data:
+
+networks:
+  server-backend-network:
+    driver: bridge
+    internal: true
+  server-frontend-network:
+    driver: bridge
