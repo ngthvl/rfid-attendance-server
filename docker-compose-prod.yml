@@ -1,0 +1,102 @@
+version: '3.8'
+services:
+  dns:
+    image: ubuntu/bind9
+    ports:
+      - "53:53"
+      - "53:53/udp"
+    networks:
+      - app-network
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8003:80"
+    volumes:
+      - ./api:/var/www/html
+      - ./nginx/dev.conf:/etc/nginx/nginx.conf
+    networks:
+      - app-network
+    depends_on:
+      - dns
+      - api_ws
+      - admin_frontend
+      - api
+
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=student_attendance_system
+      - POSTGRES_PASSWORD=C54uxdBdfbp4
+      - POSTGRES_DB=student_attendance_system_dev
+    networks:
+      - app-network
+    restart: always
+    ports:
+      - "5432:5432"
+
+  api_ws:
+    image: node:20-alpine3.17
+    build:
+      context: ./api-ws
+      dockerfile: Dockerfile
+    volumes:
+      - ./api-ws:/home/app
+    ports:
+      - "3000:3000"
+    working_dir: /home/app
+    command: node /home/app/index.mjs
+    networks:
+      - app-network
+
+  api:
+    image: php:8.2-fpm
+    build:
+      context: ./api
+      dockerfile: api/Dockerfile.dev
+    volumes:
+      - ./api:/var/www/html
+    networks:
+      - app-network
+    tty: true
+    depends_on:
+      - db
+    restart: always
+    expose:
+      - 9000
+    environment:
+      - COMPOSER_ALLOW_SUPERUSER=1
+
+  admin_frontend:
+    image: node:20-alpine3.17
+    build:
+      context: ./api-ws
+      dockerfile: Dockerfile
+    volumes:
+      - ./admin-frontend:/home/app/
+    working_dir: /home/app
+    command: npm run dev
+    expose:
+      - 3000
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+    depends_on:
+      - api
+      - api_ws
+
+networks:
+  app-network:
+    driver: bridge
+volumes:
+  postgres_data:
