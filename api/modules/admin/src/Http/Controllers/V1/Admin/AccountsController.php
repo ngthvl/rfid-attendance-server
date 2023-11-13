@@ -15,4 +15,15 @@ class AccountsController extends Controller
 
         return AdminResource::collection($users);
     }
+
+    public function show(int $id)
+    {
+        $user = QueryBuilder::for(Admin::class)->where('id', $id)->first();
+
+        if(!$user){
+            return $this->respondWithError('user_not_found', 404, 'User not found');
+        }
+
+        return new AdminResource($user);
+    }
 }
