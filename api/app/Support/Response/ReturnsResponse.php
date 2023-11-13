@@ -18,6 +18,19 @@ trait ReturnsResponse
         ], $statusCode)->header('Authorization', $token);
     }
 
+    protected function respondWithTokenAndMeta(string $token, $user, $meta, $statusCode = 200): array
+    {
+        return [
+            'data' => [
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => now()->addMinutes(config('jwt.ttl')),
+                'user' => $user,
+                'meta' => $meta
+            ],
+        ];
+    }
+
     protected function respondWithError(string $errorCode, int $statusCode = 400, ?string $message = null, array $metadata = []): JsonResponse
     {
         $payload = [

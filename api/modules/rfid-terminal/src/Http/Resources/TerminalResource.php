@@ -1,12 +1,13 @@
 <?php
 
-namespace Tamani\Admin\Http\Resources;
+namespace Tamani\RfidTerminal\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Tamani\Admin\Models\Admin;
+use Tamani\RfidTerminal\Models\RfidTerminal;
 
-class AdminResource extends JsonResource
+class TerminalResource extends JsonResource
 {
     /*
      * @var Tamani\Admin\Models\Admin
@@ -20,7 +21,7 @@ class AdminResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return $this->resource->only(array_merge(Admin::FILLABLE, [
+        return $this->resource->only(array_merge(RfidTerminal::FILLABLE, [
             'id', 'created_at'
         ]));
     }

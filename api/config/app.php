@@ -70,7 +70,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Manila',
 
     /*
     |--------------------------------------------------------------------------
@@ -169,7 +169,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         \Tamani\Admin\Providers\AdminServiceProvider::class,
-        \Tamani\RfidTerminal\Providers\RfidTerminalServiceProvider::class
+        \Tamani\RfidTerminal\Providers\RfidTerminalServiceProvider::class,
+        \Tamani\Students\Providers\StudentsServiceProvider::class,
     ])->toArray(),
 
     /*

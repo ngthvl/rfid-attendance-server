@@ -16,8 +16,10 @@ class AuthTest extends TestCase
             'password' => Hash::make($password)
         ]);
 
-        $this->post('api/v1/auth/login', ['email'=>$user->email, 'password'=>$password])
-            ->assertSuccessful()
+        $response = $this->postJson('api/v1/admin/auth', ['email'=>$user->email, 'password'=>$password]);
+
+
+        $response->assertSuccessful()
             ->assertJsonStructure([
                 'data'=>[
                     'access_token',
