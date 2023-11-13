@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('rfid_outputs', function (Blueprint $table) {
             $table->id();
+            $table->string('student_uid');
+            $table->dateTime('detection_dt');
             $table->timestamps();
         });
     }
