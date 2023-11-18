@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Tamani\Admin\Models\Admin;
 
-class PhoneBookResource extends JsonResource
+class SmsResource extends JsonResource
 {
     /*
      * @var Tamani\Admin\Models\Admin
@@ -22,9 +22,9 @@ class PhoneBookResource extends JsonResource
     {
         return $this->resource->only([
             'id',
-            'contact_number',
-            'contact_name',
-            'last_message'
+            'message',
+            'type',
+            'status',
         ]);
     }
 }

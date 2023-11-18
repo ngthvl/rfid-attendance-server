@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import jwtMiddleware from "../middleware/jwtMiddleware";
+import jwtMiddleware from "~/middleware/jwtMiddleware";
 
 definePageMeta({
   middleware: jwtMiddleware,

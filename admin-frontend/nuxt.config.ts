@@ -9,6 +9,24 @@ const pubKeyContent = fs.readFileSync(pubkeyPath, {encoding: "utf8"});
 export default defineNuxtConfig({
   devtools: { enabled: true },
   runtimeConfig: {
-    rsaPubKey: pubKeyContent,
+    public: {
+      rsaPubKey: pubKeyContent,
+      apiBase: '/api',
+      appOwner: 'CODELINES',
+      appNameSub: 'Student Attendance System'
+    }
   },
+  modules: [    
+    '@invictus.codes/nuxt-vuetify'  
+  ],  
+  vuetify: {
+    vuetifyOptions: { },
+    moduleOptions: {
+      treeshaking: true,      
+      useIconCDN: false,  
+      // styles: true | 'none' | 'expose' | 'sass' | { configFile: string },      
+      autoImport: true,      
+      // useVuetifyLabs: true | false,     
+    }
+  }   
 })

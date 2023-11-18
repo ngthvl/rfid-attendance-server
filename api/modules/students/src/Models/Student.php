@@ -5,12 +5,14 @@ namespace Tamani\Students\Models;
 use App\Support\UUIDModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 use Tamani\Students\Factories\StudentFactory;
 
 class Student extends Model
 {
     use HasFactory;
     use UUIDModel;
+    use Notifiable;
 
     const FILLABLE = [
         'student_id',

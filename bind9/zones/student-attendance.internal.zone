@@ -10,8 +10,8 @@ $TTL    1d ; default expiration time (in seconds) of all RRs without their own T
      IN      NS      ns1.todoapp.internal.
 
 ; name servers - A records
-ns1.student-attendance.internal.             IN      A      192.168.0.3
+ns1.student-attendance.internal.             IN      A      192.168.10.100
 
-api.student-attendance.internal.             IN      A      192.168.0.3
-ws.student-attendance.internal.              IN      A      192.168.0.3
-admin.student-attendance.internal.           IN      A      192.168.0.3
+api.student-attendance.internal.             IN      A      192.168.10.100
+ws.student-attendance.internal.              IN      A      192.168.10.100
+admin.student-attendance.internal.           IN      A      192.168.10.100

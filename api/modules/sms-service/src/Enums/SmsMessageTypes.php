@@ -1,9 +1,9 @@
 <?php
+namespace Tamani\Sms\Enums;
 
-
-class SmsMessageStatus
+class SmsMessageTypes
 {
-    const PENDING = 'pending';
-    const SENT = 'sent';
-    const FAILED = 'failed';
+    const OUTGOING = 'outgoing';
+    const INCOMING = 'incoming';
+    const DRAFT = 'draft';
 }
