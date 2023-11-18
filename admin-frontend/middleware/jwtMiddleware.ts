@@ -1,21 +1,34 @@
 import {CookieRef, navigateTo, useCookie, useRuntimeConfig} from "nuxt/app";
 
-import jwt from 'jsonwebtoken';
+// import jwt from 'jsonwebtoken';
+import {jwtDecode} from "jwt-decode";
 
 export default defineNuxtRouteMiddleware((to, from) => {
-    const runtimeConfig = useRuntimeConfig();
-    const cookieStore = useCookie("token");
+  const runtimeConfig = useRuntimeConfig();
+  const cookieStore = useCookie("accessToken");
 
-    const pubkey = runtimeConfig.rsaPubKey;
+  const pubkey = runtimeConfig.public.rsaPubKey;
 
-    if(!cookieStore.value){
-        return navigateTo("/login");
-    }
+  const userState = () => useState('userData');
 
+  if(!cookieStore.value){
+      return navigateTo("/login");
+  }else{
     try{
-        const jw = jwt.verify(cookieStore.value, pubkey);
-        console.log(jw);
+      const jwt = jwtDecode(cookieStore.value);
+
+      if(!userState().value){
+        useFetchMe().then((res) => {
+          if(res.data.value?.data){
+
+            userState().value = res.data.value?.data;
+          }
+        })
+      }
+
     } catch(err) {
-        return navigateTo('/login');
+      return navigateTo('/login');
     }
+  }
+    
 })

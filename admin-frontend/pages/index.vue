@@ -3,7 +3,8 @@
 import jwtMiddleware from "../middleware/jwtMiddleware";
 
 definePageMeta({
-  middleware: jwtMiddleware
+  middleware: jwtMiddleware,
+  layout: 'admin',
 })
 
 </script>

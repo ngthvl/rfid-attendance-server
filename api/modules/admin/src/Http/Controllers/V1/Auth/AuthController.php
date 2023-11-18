@@ -5,6 +5,7 @@ namespace Tamani\Admin\Http\Controllers\V1\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Tamani\Admin\Http\Requests\StoreAuthRequest;
+use Tamani\Admin\Http\Resources\AdminProfileResource;
 use Tamani\Admin\Models\Admin;
 
 class AuthController extends Controller
@@ -27,4 +28,11 @@ class AuthController extends Controller
 
         return $this->respondWithToken($token, $user);
     }
+
+   public function me()
+   {
+       $me = auth()->user();
+
+       return new AdminProfileResource($me);
+   }
 }

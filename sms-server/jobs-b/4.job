@@ -1,4 +1,0 @@
-WEBHOOK=http://localhost:8000/api/v1/webhooks/sms-server-webhook/asdhjkgjghj12313sdsdfdsf
-COMMAND=send_sms
-PHONE_NUMBER=+639457201016
-MESSAGE=hello world!

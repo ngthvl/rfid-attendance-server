@@ -1,11 +1,14 @@
 <script setup lang="ts">
 
+import SideBar from "~/components/SideBar.vue";
 </script>
 
 <template>
-  $END$
+  <v-layout>
+    <v-main>
+      <SideBar />
+      <MenuBar />
+      <NuxtPage />
+    </v-main>
+  </v-layout>
 </template>
-
-<style scoped>
-
-</style>
