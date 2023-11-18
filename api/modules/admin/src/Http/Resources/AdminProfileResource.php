@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Tamani\Admin\Models\Admin;
 
-class AdminResource extends JsonResource
+class AdminProfileResource extends JsonResource
 {
     /*
      * @var Tamani\Admin\Models\Admin

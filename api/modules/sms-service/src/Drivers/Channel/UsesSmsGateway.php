@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Support\Drivers\Channel;
+namespace Tamani\Sms\Drivers\Channel;
 
 
 interface UsesSmsGateway

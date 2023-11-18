@@ -3,7 +3,9 @@
 </script>
 
 <template>
-  $END$
+  <v-table>
+
+  </v-table>
 </template>
 
 <style scoped>

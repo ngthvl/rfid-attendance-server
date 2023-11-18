@@ -20,4 +20,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('v1/webhooks/sms-server-webhook/{tag}', function(Request $request, string $tag){
     \Illuminate\Support\Facades\Log::info($tag, $request->all());
-});
+})->name('sms-server-wh');

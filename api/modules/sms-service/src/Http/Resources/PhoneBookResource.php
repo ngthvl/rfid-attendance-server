@@ -1,13 +1,15 @@
 <?php
 
-namespace Tamani\Admin\Http\Resources;
+namespace Tamani\Sms\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Notifications\Notifiable;
 use Tamani\Admin\Models\Admin;
 
-class AdminResource extends JsonResource
+class PhoneBookResource extends JsonResource
 {
+    use Notifiable;
     /*
      * @var Tamani\Admin\Models\Admin
      */
@@ -20,8 +22,11 @@ class AdminResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return $this->resource->only(array_merge(Admin::FILLABLE, [
-            'id', 'created_at'
-        ]));
+        return $this->resource->only([
+            'id',
+            'contact_number',
+            'contact_name',
+            'last_message'
+        ]);
     }
 }
