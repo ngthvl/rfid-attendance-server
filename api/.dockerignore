@@ -1,1 +1,4 @@
 storage/*.key
+vendor
+storage/app/private
+storage/app/public
