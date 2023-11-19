@@ -6,27 +6,31 @@ services:
       - "53:53"
       - "53:53/udp"
     networks:
-      - app-network
+      - server-frontend-network
 
   redis:
     image: redis:alpine
     ports:
       - "6379:6379"
     networks:
-      - app-network
+      - server-backend-network
 
   nginx:
     image: nginx:alpine
     ports:
-      - "8003:80"
+      - "80:80"
     volumes:
       - ./api:/var/www/html
-      - ./nginx/dev.conf:/etc/nginx/nginx.conf
+      - ./api/.env.production:/var/www/html/.env
+      - ./nginx/prod.conf:/etc/nginx/nginx.conf
+      - ./.secrets/student-attendance.internal.crt:/etc/certs/student-attendance.internal/student-attendance.internal.crt
+      - ./.secrets/student-attendance.internal.key:/etc/certs/student-attendance.internal/student-attendance.internal.key
     networks:
-      - app-network
+      - server-backend-network
+      - server-frontend-network
     depends_on:
       - dns
-      - api_ws
+      # - api_ws
       - admin_frontend
       - api
 
@@ -39,65 +43,66 @@ services:
       - POSTGRES_PASSWORD=C54uxdBdfbp4
       - POSTGRES_DB=student_attendance_system_dev
     networks:
-      - app-network
+      - server-backend-network
     restart: always
     ports:
       - "5432:5432"
 
-  api_ws:
-    image: node:20-alpine3.17
-    build:
-      context: ./api-ws
-      dockerfile: Dockerfile
-    volumes:
-      - ./api-ws:/home/app
-    ports:
-      - "3000:3000"
-    working_dir: /home/app
-    command: node /home/app/index.mjs
-    networks:
-      - app-network
+  # api_ws:
+  #   image: node:20-alpine3.17
+  #   build:
+  #     context: ./api-ws
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./api-ws:/home/app
+  #   ports:
+  #     - "3000:3000"
+  #   working_dir: /home/app
+  #   command: node /home/app/index.mjs
+  #   networks:
+  #     - app-network
 
   api:
-    image: php:8.2-fpm
     build:
       context: ./api
-      dockerfile: api/Dockerfile.dev
-    volumes:
-      - ./api:/var/www/html
-    networks:
-      - app-network
+      dockerfile: Dockerfile.prod
     tty: true
     depends_on:
       - db
-    restart: always
-    expose:
-      - 9000
+      - redis
+    restart: unless-stopped
     environment:
       - COMPOSER_ALLOW_SUPERUSER=1
+    networks:
+      - server-backend-network
+    volumes:
+      - ./.secrets/oauth-private.key:/var/www/html/storage/oauth-private.key
+      - ./.secrets/oauth-public.key:/var/www/html/storage/oauth-public.key
+      - sms_server_jobs:/var/www/html/storage/app/sms-jobs
 
   admin_frontend:
-    image: node:20-alpine3.17
     build:
-      context: ./api-ws
-      dockerfile: Dockerfile
-    volumes:
-      - ./admin-frontend:/home/app/
-    working_dir: /home/app
-    command: npm run dev
-    expose:
-      - 3000
-    ports:
-      - "3000:3000"
+      context: ./admin-frontend
+      dockerfile: Dockerfile.prod
     networks:
-      - app-network
+      - server-backend-network
     depends_on:
       - api
-      - api_ws
+
+  sms_server:
+    build:
+      context: sms-server
+      dockerfile: Dockerfile.prod
+    volumes:
+      - sms_server_jobs:/home/app/jobs
 
 networks:
-  app-network:
+  server-backend-network:
     driver: bridge
+    internal: true
+  server-frontend-network:
+    driver: bridge
+
 volumes:
   postgres_data:
   sms_server_jobs:

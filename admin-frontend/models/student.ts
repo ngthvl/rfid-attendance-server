@@ -66,3 +66,9 @@ export const list = async () => {
     meta.value = data?.value?.meta;
   }
 }
+
+export const updateFromCsv = async () => {
+  await useApi('/admin/students/import', {
+
+  })
+}

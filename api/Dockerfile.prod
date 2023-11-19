@@ -18,24 +18,30 @@ RUN apt-get update \
   unzip \
   zlib1g-dev \
   libpq-dev \
-  libzip-dev
+  libzip-dev \
+  supervisor
+
+#RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
   && docker-php-ext-install pdo pdo_pgsql pgsql zip bcmath gd
 
 COPY . .
 COPY ./.env.development ./.env
+
+#COPY ./../.secrets/oauth-private.key ./storage/oauth-private.key
+#COPY ./../.secrets/oauth-public.key ./storage/oauth-public.key
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN composer update
 RUN composer install
+#RUN php artisan migrate
 RUN php artisan clear
 RUN php artisan storage:link --quiet --no-interaction --force
 RUN php artisan optimize
 
-COPY ./docker-entrypoint.sh /tmp/docker-entrypoint.sh
-RUN chmod +x /tmp/docker-entrypoint.sh
-ENTRYPOINT ["/tmp/docker-entrypoint.sh"]
+COPY supervisord-dev.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 9000
 CMD ["php-fpm"]
+#CMD ["/usr/bin/supervisord"]

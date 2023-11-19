@@ -2,6 +2,7 @@ import {R} from "vite-node/types-516036fa";
 import {FetchContext, FetchResponse} from "ofetch";
 import {useRouter} from "nuxt/app";
 
+export const isApiLoading = ref(false);
 export const useApi = (
     path: string,
     {
@@ -28,7 +29,11 @@ export const useApi = (
       Accept: 'application/json',
       Authorization: cookies.value || tempToken ? `Bearer ${cookies.value || tempToken}` : undefined,
     } as HeadersInit,
+    onRequest(context: FetchContext): Promise<void> | void {
+      isApiLoading.value = true;
+    },
     onResponse({ request, response, options }) {
+      isApiLoading.value = false;
       if(response.status == 401){
         const rt = useRouter();
         rt.push('/login');
