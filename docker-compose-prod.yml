@@ -2,14 +2,20 @@ version: '3.8'
 services:
   dns:
     image: ubuntu/bind9
+    build: 
+      context: ./bind9
+      dockerfile: Dockerfile.prod
+    restart: always
     ports:
       - "53:53"
       - "53:53/udp"
+      - "953:953"
     networks:
       - server-frontend-network
 
   redis:
     image: redis:alpine
+    restart: always
     ports:
       - "6379:6379"
     networks:
@@ -17,25 +23,29 @@ services:
 
   nginx:
     image: nginx:alpine
+    build: 
+      context: ./
+      dockerfile: nginx/Dockerfile.prod
+    restart: always
     ports:
       - "80:80"
-    volumes:
-      - ./api:/var/www/html
-      - ./api/.env.production:/var/www/html/.env
-      - ./nginx/prod.conf:/etc/nginx/nginx.conf
-      - ./.secrets/student-attendance.internal.crt:/etc/certs/student-attendance.internal/student-attendance.internal.crt
-      - ./.secrets/student-attendance.internal.key:/etc/certs/student-attendance.internal/student-attendance.internal.key
+    # volumes:
+      # - ./api:/var/www/html
+      # - ./api/.env.production:/var/www/html/.env
+      # - ./nginx/prod.conf:/etc/nginx/nginx.conf
+      # - ./.secrets/student-attendance.internal.crt:/etc/certs/student-attendance.internal/student-attendance.internal.crt
+      # - ./.secrets/student-attendance.internal.key:/etc/certs/student-attendance.internal/student-attendance.internal.key
     networks:
       - server-backend-network
       - server-frontend-network
     depends_on:
       - dns
-      # - api_ws
       - admin_frontend
       - api
 
   db:
     image: postgres:15
+    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
@@ -44,7 +54,6 @@ services:
       - POSTGRES_DB=student_attendance_system_dev
     networks:
       - server-backend-network
-    restart: always
     ports:
       - "5432:5432"
 
@@ -64,20 +73,20 @@ services:
 
   api:
     build:
-      context: ./api
-      dockerfile: Dockerfile.prod
+      context: ./
+      dockerfile: ./api/Dockerfile.prod
     tty: true
     depends_on:
       - db
       - redis
-    restart: unless-stopped
+    restart: always
     environment:
       - COMPOSER_ALLOW_SUPERUSER=1
     networks:
       - server-backend-network
     volumes:
-      - ./.secrets/oauth-private.key:/var/www/html/storage/oauth-private.key
-      - ./.secrets/oauth-public.key:/var/www/html/storage/oauth-public.key
+      # - ./.secrets/oauth-private.key:/var/www/html/storage/oauth-private.key
+      # - ./.secrets/oauth-public.key:/var/www/html/storage/oauth-public.key
       - sms_server_jobs:/var/www/html/storage/app/sms-jobs
 
   admin_frontend:
@@ -88,6 +97,7 @@ services:
       - server-backend-network
     depends_on:
       - api
+    restart: always
 
   sms_server:
     build:
@@ -95,6 +105,7 @@ services:
       dockerfile: Dockerfile.prod
     volumes:
       - sms_server_jobs:/home/app/jobs
+    restart: always
 
 networks:
   server-backend-network:
