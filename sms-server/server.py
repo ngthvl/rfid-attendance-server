@@ -2,18 +2,18 @@ import os
 import time
 from pathlib import Path
 from lib.codec import GSM
-import threading
+from dotenv import load_dotenv
 
+import threading
 import serial
 import requests
 
-
 class smsServer:
-    JOBS_PATH = "jobs"
+    JOBS_PATH = os.getenv('JOBS_PATH')
 
     SERIAL_BUS = None
-    SERIAL_PORT = "COM10"
-    SERIAL_BAUDRATE = 230400
+    SERIAL_PORT = os.getenv('SERIAL_PORT')
+    SERIAL_BAUDRATE = os.getenv('SERIAL_BAUDRATE')
     SERIAL_PARITY_BITS = serial.PARITY_NONE
     SERIAL_STOP_BITS = serial.STOPBITS_ONE
     SERIAL_BYTESIZE = serial.EIGHTBITS
@@ -30,7 +30,7 @@ class smsServer:
     READER_THREAD = None
 
     RESTARTER_BUS = None
-    RESTARTER_PORT = "COM9"
+    RESTARTER_PORT = None
     RESTARTER_BAUDRATE = 9600
 
     SMS_MODE = 0
@@ -153,23 +153,24 @@ class smsServer:
             self.initialize_restart_modem()
 
     def initialize_restarter_serial_bus(self):
-        try:
-            self.RESTARTER_BUS = serial.Serial(
-                port=self.RESTARTER_PORT,  # port
-                baudrate=self.RESTARTER_BAUDRATE,
-                parity=self.SERIAL_PARITY_BITS,
-                stopbits=self.SERIAL_STOP_BITS,
-                bytesize=self.SERIAL_BYTESIZE,
-            )
+        if self.RESTARTER_PORT is not None:
+            try:
+                self.RESTARTER_BUS = serial.Serial(
+                    port=self.RESTARTER_PORT,  # port
+                    baudrate=self.RESTARTER_BAUDRATE,
+                    parity=self.SERIAL_PARITY_BITS,
+                    stopbits=self.SERIAL_STOP_BITS,
+                    bytesize=self.SERIAL_BYTESIZE,
+                )
 
-            if self.RESTARTER_BUS.isOpen() == False:
-                self.RESTARTER_BUS.open()
+                if self.RESTARTER_BUS.isOpen() == False:
+                    self.RESTARTER_BUS.open()
 
-            self.RESTARTER_BUS.write('ats')
-            print("Connected to restarter device")
-        except:
-            time.sleep(10)
-            self.initialize_restarter_serial_bus()
+                self.RESTARTER_BUS.write('ats')
+                print("Connected to restarter device")
+            except:
+                time.sleep(10)
+                self.initialize_restarter_serial_bus()
 
     def initialize_serial_bus(self):
         try:
@@ -197,4 +198,5 @@ class smsServer:
 
 
 if __name__ == "__main__":
+    load_dotenv()
     smsServer()
