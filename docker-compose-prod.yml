@@ -2,7 +2,7 @@ version: '3.8'
 services:
   dns:
     image: ubuntu/bind9
-    build: 
+    build:
       context: ./bind9
       dockerfile: Dockerfile.prod
     restart: always
@@ -23,7 +23,7 @@ services:
 
   nginx:
     image: nginx:alpine
-    build: 
+    build:
       context: ./
       dockerfile: nginx/Dockerfile.prod
     restart: always
@@ -91,8 +91,8 @@ services:
 
   admin_frontend:
     build:
-      context: ./admin-frontend
-      dockerfile: Dockerfile.prod
+      context: ./
+      dockerfile: ./admin-frontend/Dockerfile.prod
     networks:
       - server-backend-network
     depends_on:
