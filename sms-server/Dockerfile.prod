@@ -11,6 +11,6 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-COPY ./.env.prod ./.env
+COPY .env.prod .env
 
 CMD [ "python", "server.py" ]
