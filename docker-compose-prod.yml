@@ -29,12 +29,6 @@ services:
     restart: always
     ports:
       - "80:80"
-    # volumes:
-      # - ./api:/var/www/html
-      # - ./api/.env.production:/var/www/html/.env
-      # - ./nginx/prod.conf:/etc/nginx/nginx.conf
-      # - ./.secrets/student-attendance.internal.crt:/etc/certs/student-attendance.internal/student-attendance.internal.crt
-      # - ./.secrets/student-attendance.internal.key:/etc/certs/student-attendance.internal/student-attendance.internal.key
     networks:
       - server-backend-network
       - server-frontend-network
