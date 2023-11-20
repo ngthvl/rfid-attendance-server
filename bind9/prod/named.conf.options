@@ -1,3 +1,8 @@
+acl goodclients {
+    localhost;
+    192.168.10.0/24;
+};
+
 options {
 	directory "/var/cache/bind";
 
@@ -22,4 +27,6 @@ options {
 	dnssec-validation auto;
 
 	listen-on-v6 { any; };
+
+	allow-query { goodclients; };
 };
