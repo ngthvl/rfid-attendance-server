@@ -1,21 +1,29 @@
 import {R} from "vite-node/types-516036fa";
 import {FetchContext, FetchResponse} from "ofetch";
 import {useRouter} from "nuxt/app";
+import {Ref} from "vue";
+import {ClientErrorType} from "~/types/errortype";
 
+interface apiParams{
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+  params?: any
+  body?: any
+  tempToken?: string,
+  headers?: object
+}
 export const isApiLoading = ref(false);
+
+export const clientErrors: Ref<ClientErrorType> = ref({});
+
 export const useApi = (
-    path: string,
-    {
-      method,
-      params,
-      body,
-      tempToken,
-    }: {
-      method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
-      params?: any
-      body?: any
-      tempToken?: string
-    }
+  path: string,
+  {
+    method,
+    params,
+    body,
+    tempToken,
+    headers
+  }: apiParams
 ) => {
   const config = useRuntimeConfig()
   const cookies = useCookie('accessToken')
@@ -37,6 +45,10 @@ export const useApi = (
       if(response.status == 401){
         const rt = useRouter();
         rt.push('/login');
+      }
+
+      if(response.status == 422){
+        clientErrors.value = response._data
       }
     },
   })

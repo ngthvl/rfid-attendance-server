@@ -4,6 +4,7 @@ namespace Tamani\Students\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -27,7 +28,9 @@ class StudentAccountController extends Controller
      */
     public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
-        $qb = QueryBuilder::for(Student::class)->paginate();
+        $pageLen = Request::input('per_page', 10);
+        
+        $qb = QueryBuilder::for(Student::class)->paginate($pageLen);
 
         return StudentResource::collection($qb);
     }

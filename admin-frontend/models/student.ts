@@ -1,6 +1,7 @@
 import {Ref} from "vue";
 import type { ResponseMeta } from "~/types/meta";
 import { ResponseMetaDefaults } from '~/types/meta';
+import {ClientErrorType} from "~/types/errortype";
 
 export interface Student {
   student_id: String
@@ -9,8 +10,8 @@ export interface Student {
   contact_person: String
   contact_number: String
   contact_address: String
-  id: String
-  created_at: String
+  id?: String
+  created_at?: String
 }
 
 interface filterType {
@@ -67,8 +68,15 @@ export const list = async () => {
   }
 }
 
+export const save = async (student: Student) => {
+  useApi('/admin/students', {
+    method: "POST",
+    body: student
+  })
+}
+
 export const updateFromCsv = async () => {
   await useApi('/admin/students/import', {
-
+    method: 'POST'
   })
 }

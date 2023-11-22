@@ -29,6 +29,6 @@ import {isApiLoading} from "~/composables/useApi";
 
 <style scoped>
 .v-toolbar__extension{
-  height: 10px!important;
+  max-height: 10px!important;
 }
 </style>

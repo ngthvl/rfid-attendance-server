@@ -100,6 +100,8 @@ services:
     volumes:
       - sms_server_jobs:/home/app/jobs
     restart: always
+    devices:
+      - /dev/ttyS0
 
 networks:
   server-backend-network:

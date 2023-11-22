@@ -23,13 +23,25 @@ definePageMeta({
         <v-text-field v-model="filters.search" class="mt-3" prepend-inner-icon="mdi-magnify" variant="outlined" label="Search"></v-text-field>
       </v-card-item>
       <v-card-item>
-        <v-btn rounded="xl" color="success" :flat="true">Import/Update from CSV</v-btn>
-        <v-menu activator="parent">
-          <v-list>
-            <v-list-item title="Download Template" :href="sampleFile"></v-list-item>
-            <v-list-item title="Upload file"></v-list-item>
-          </v-list>
-        </v-menu>
+        <v-btn rounded="xl" color="primary" class="mr-3">
+          Add Student
+          <v-menu activator="parent">
+            <v-list>
+              <v-list-item title="Add One" to="/students/create"></v-list-item>
+              <v-list-item title="Add By Section" to="/students/createbysection"></v-list-item>
+              <v-list-item title="Add By Level" to="/students/createbylevel"></v-list-item>
+            </v-list>
+          </v-menu>
+        </v-btn>
+        <v-btn rounded="xl" color="success" :flat="true">
+          Import/Update from CSV
+          <v-menu activator="parent">
+            <v-list>
+              <v-list-item title="Download Template" :href="sampleFile"></v-list-item>
+              <v-list-item title="Upload file"></v-list-item>
+            </v-list>
+          </v-menu>
+        </v-btn>
       </v-card-item>
       <v-card-item>
         <v-table :hover="true" style="font-family: monospace">
