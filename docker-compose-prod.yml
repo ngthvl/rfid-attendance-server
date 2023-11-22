@@ -2,9 +2,6 @@ version: '3.8'
 services:
   dns:
     image: ubuntu/bind9
-    build:
-      context: ./bind9
-      dockerfile: Dockerfile.prod
     restart: always
     ports:
       - "53:53"
@@ -12,6 +9,10 @@ services:
       - "953:953"
     networks:
       - server-frontend-network
+    volumes:
+    - ./bind9/prod/named.conf.local:/etc/bind/named.conf.local
+      ./bind9/prod/named.conf.options:/etc/bind/named.conf.options
+      ./bind9/prod/zones:/etc/bind/zones
 
   redis:
     image: redis:alpine
