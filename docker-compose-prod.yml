@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   dns:
-    image: ubuntu/bind9
+    image: internetsystemsconsortium/bind9
     restart: always
     tty: true
     ports:
