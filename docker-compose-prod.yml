@@ -14,6 +14,9 @@ services:
     - ./bind9/prod/named.conf.local:/etc/bind/named.conf.local
     - ./bind9/prod/named.conf.options:/etc/bind/named.conf.options
     - ./bind9/prod/zones:/etc/bind/zones
+    environment:
+      - BIND9_USER=root
+      - TZ=Asia/Manila
 
   redis:
     image: redis:alpine
