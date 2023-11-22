@@ -1,5 +1,0 @@
-FROM alpine as builder
-
-COPY ./prod/named.conf.local /etc/bind/named.conf.local
-COPY ./prod/named.conf.options /etc/bind/named.conf.options
-COPY ./prod/zones /etc/bind/zones

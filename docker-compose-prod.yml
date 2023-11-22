@@ -24,9 +24,6 @@ services:
 
   nginx:
     image: nginx:alpine
-    build:
-      context: ./
-      dockerfile: nginx/Dockerfile.prod
     restart: always
     ports:
       - "80:80"
@@ -36,6 +33,12 @@ services:
       - dns
       - admin_frontend
       - api
+    volumes:
+    - ./.secrets/student-attendance.internal.crt:/etc/certs/student-attendance.internal/student-attendance.internal.crt
+    - ./.secrets/student-attendance.internal.key:/etc/certs/student-attendance.internal/student-attendance.internal.key
+    - ./nginx/prod.conf:/etc/nginx/nginx.conf
+    - ./api:/var/www/html
+    - ./api/.env.production:/var/www/html/.env
 
   db:
     image: postgres:15
