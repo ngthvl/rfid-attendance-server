@@ -20,7 +20,7 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - server-frontend-network
+      - server-backend-network
 
   nginx:
     image: nginx:alpine
@@ -29,6 +29,7 @@ services:
       - "80:80"
     networks:
       - server-frontend-network
+      - server-backend-network
     depends_on:
       - dns
       - admin_frontend
@@ -50,7 +51,7 @@ services:
       - POSTGRES_PASSWORD=C54uxdBdfbp4
       - POSTGRES_DB=student_attendance_system_dev
     networks:
-      - server-frontend-network
+      - server-backend-network
     ports:
       - "5432:5432"
 
@@ -80,7 +81,7 @@ services:
     environment:
       - COMPOSER_ALLOW_SUPERUSER=1
     networks:
-      - server-frontend-network
+      - server-backend-network
     volumes:
       # - ./.secrets/oauth-private.key:/var/www/html/storage/oauth-private.key
       # - ./.secrets/oauth-public.key:/var/www/html/storage/oauth-public.key
@@ -91,7 +92,7 @@ services:
       context: ./
       dockerfile: ./admin-frontend/Dockerfile.prod
     networks:
-      - server-frontend-network
+      - server-backend-network
     depends_on:
       - api
     restart: always
