@@ -1,17 +1,18 @@
-$TTL    1d ; default expiration time (in seconds) of all RRs without their own TTL value
-@       IN      SOA     ns1.student-attendance.internal. root.student-attendance.internal. (
-                  3      ; Serial
-                  1d     ; Refresh
-                  1h     ; Retry
-                  1w     ; Expire
-                  1h )   ; Negative Cache TTL
+$TTL    1d ;
+$ORIGIN student-attendance.internal.
 
-; name servers - NS records
+@       IN      SOA     student-attendance.internal. ns.student-attendance.internal. (
+                  2022052603 ; Serial
+                  1d         ; Refresh
+                  1h         ; Retry
+                  3w         ; Expire
+                  2h )       ; Negative Cache TTL
+
      IN      NS      ns1.todoapp.internal.
 
-; name servers - A records
-ns1.student-attendance.internal.             IN      A      192.168.10.100
+@ IN NS ns.student-attendance.internal.
+ns                                  IN      A      192.168.10.100
+student-attendance.internal.        IN      A      192.168.10.100
+api.student-attendance.internal.    IN      A      192.168.10.100
+ws.student-attendance.internal.     IN      A      192.168.10.100
 
-api.student-attendance.internal.             IN      A      192.168.10.100
-ws.student-attendance.internal.              IN      A      192.168.10.100
-admin.student-attendance.internal.           IN      A      192.168.10.100

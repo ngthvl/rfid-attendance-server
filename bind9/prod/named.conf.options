@@ -1,4 +1,4 @@
-acl goodclients {
+acl internal {
     localhost;
     192.168.10.0/24;
 };
@@ -31,5 +31,5 @@ options {
 
 	listen-on-v6 { any; };
 
-	allow-query { goodclients; };
+	allow-query { internal; };
 };

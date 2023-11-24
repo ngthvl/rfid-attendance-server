@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   dns:
-    image: ubuntu/bind9
+    image: ubuntu/bind9:edge
     restart: always
     ports:
       - "53:53"
@@ -10,12 +10,9 @@ services:
     networks:
       - server-frontend-network
     volumes:
-    - ./bind9/prod/named.conf.local:/etc/bind/named.conf.local
+    - ./bind9/prod/named.conf:/etc/bind/named.conf
     - ./bind9/prod/named.conf.options:/etc/bind/named.conf.options
     - ./bind9/prod/zones:/etc/bind/zones
-    environment:
-      - BIND9_USER=root
-      - TZ=Asia/Manila
 
   redis:
     image: redis:alpine
