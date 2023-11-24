@@ -12,8 +12,8 @@ class smsServer:
     JOBS_PATH = os.getenv('JOBS_PATH')
 
     SERIAL_BUS = None
-    SERIAL_PORT = os.getenv('SERIAL_PORT')
-    SERIAL_BAUDRATE = os.getenv('SERIAL_BAUDRATE')
+    SERIAL_PORT = "/dev/ttyS5"
+    SERIAL_BAUDRATE = 115200
     SERIAL_PARITY_BITS = serial.PARITY_NONE
     SERIAL_STOP_BITS = serial.STOPBITS_ONE
     SERIAL_BYTESIZE = serial.EIGHTBITS
