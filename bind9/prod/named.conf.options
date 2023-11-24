@@ -1,12 +1,11 @@
 acl internal {
-    localhost;
-    192.168.10.0/24;
+    any;
 };
 
 options {
 	directory "/var/cache/bind";
 
-	listen-on { 127.0.0.1; };
+	listen-on { any; };
     listen-on-v6 { ::1; };
     allow-recursion {
         none;

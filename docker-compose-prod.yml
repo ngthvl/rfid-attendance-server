@@ -7,12 +7,15 @@ services:
       - "53:53"
       - "53:53/udp"
       - "953:953"
-    networks:
-      - server-frontend-network
+    expose:
+      - 53
+      - 953
     volumes:
     - ./bind9/prod/named.conf:/etc/bind/named.conf.local
     - ./bind9/prod/named.conf.options:/etc/bind/named.conf.options
     - ./bind9/prod/zones:/etc/bind/zones
+    environment:
+      - BIND9_USER=bind
 
   redis:
     image: redis:alpine
