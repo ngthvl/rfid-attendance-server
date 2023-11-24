@@ -10,7 +10,7 @@ services:
     networks:
       - server-frontend-network
     volumes:
-    - ./bind9/prod/named.conf:/etc/bind/named.conf
+    - ./bind9/prod/named.conf:/etc/bind/named.conf.local
     - ./bind9/prod/named.conf.options:/etc/bind/named.conf.options
     - ./bind9/prod/zones:/etc/bind/zones
 
