@@ -5,8 +5,55 @@ import jwtMiddleware from "../../middleware/jwtMiddleware";
 import { list as listStudents, students, filters, meta } from '~/models/student'
 
 listStudents();
+
+interface hardwareParams {
+  has_tag: boolean
+  data: boolean
+  hardware_present?: boolean
+}
+
 const config = useRuntimeConfig();
 const sampleFile = `${config.public.apiBase}/admin/download-file?file=sample-documents/student-update-form.csv`
+
+const hardwareParameters: Ref<hardwareParams> = ref({
+  has_tag: false,
+  data: false,
+});
+
+const hardwareStatusColor = computed(()=>{
+  if (hardwareParameters.value.has_tag) {
+    return 'success'
+  } else {
+    return 'error'
+  }
+})
+
+const hardwareStatusText = computed(()=>{
+  if (hardwareParameters.value.has_tag) {
+    return 'Tag Detected'
+  } else {
+    return 'No Tag Found'
+  }
+})
+
+const idPrintDialog: Ref<boolean> = ref(false);
+
+
+const printId = async () => {
+  idPrintDialog.value = true
+
+  await fetchHinfo();
+
+  setInterval(fetchHinfo, 500);
+}
+
+const fetchHinfo = async () => {
+  const hInfo = await useFetch('http://writer.student-attendance.internal:15000', {method: "GET"});
+  const data = hInfo?.data?.value as hardwareParams
+
+  hardwareParameters.value.has_tag = data.has_tag
+  hardwareParameters.value.data = data.data
+}
 
 definePageMeta({
   middleware: jwtMiddleware,
@@ -17,7 +64,7 @@ definePageMeta({
 
 <template>
   <v-container>
-    <v-card class="shadown mt-4 mx-5">
+    <v-card class="shadow mt-4 mx-5">
       <v-card-title>Students</v-card-title>
       <v-card-item>
         <v-text-field v-model="filters.search" class="mt-3" prepend-inner-icon="mdi-magnify" variant="outlined" label="Search"></v-text-field>
@@ -67,7 +114,7 @@ definePageMeta({
                   <v-icon icon="mdi-dots-vertical"></v-icon>
                   <v-menu activator="parent">
                     <v-list>
-                      <v-list-item title="Print ID"></v-list-item>
+                      <v-list-item title="Print ID" @click="printId"></v-list-item>
                       <v-list-item title="Update Profile"></v-list-item>
                       <v-list-item title="Attendance"></v-list-item>
                       <v-list-item title="Detections"></v-list-item>
@@ -83,5 +130,16 @@ definePageMeta({
         <v-pagination :length="meta.last_page" :total-visible="10" :model-value="meta.current_page" v-model="filters.page"></v-pagination>
       </v-card-item>
     </v-card>
+
+    <v-dialog v-model="idPrintDialog" width="700">
+      <v-card>
+        <v-card-title>
+          <span>Print Student ID</span>
+          <span>
+            <v-btn :color="hardwareStatusColor" disabled>{{ hardwareStatusText }}</v-btn>
+          </span>
+        </v-card-title>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>

@@ -12,12 +12,12 @@ class smsServer:
     JOBS_PATH = os.getenv('JOBS_PATH')
 
     SERIAL_BUS = None
-    SERIAL_PORT = "/dev/ttyS5"
-    SERIAL_BAUDRATE = 115200
+    SERIAL_PORT = None
+    SERIAL_BAUDRATE = None
     SERIAL_PARITY_BITS = serial.PARITY_NONE
     SERIAL_STOP_BITS = serial.STOPBITS_ONE
     SERIAL_BYTESIZE = serial.EIGHTBITS
-    SERIAL_TIMEOUT = 10
+    SERIAL_TIMEOUT = 2
 
     CURRENT_REPLY = None
 
@@ -36,32 +36,38 @@ class smsServer:
     SMS_MODE = 0
 
     def __init__(self):
+        load_dotenv()
+
+        self.SERIAL_PORT = os.getenv('SERIAL_PORT')
+        self.SERIAL_BAUDRATE = os.getenv('SERIAL_BAUDRATE')
         self.begin_app_init()
-        t = threading.Thread(target=self.initialize_restarter_serial_bus())
-        t.start()
+        # t = threading.Thread(target=self.initialize_restarter_serial_bus())
+        # t.start()
 
     def begin_app_init(self):
         self.initialize_serial_bus()
-        self.READER_THREAD = threading.Thread(target=self.initialize_serial_continous_reader)
-        self.READER_THREAD.start()
-        self.send_at_command(command='AT')
+        # self.READER_THREAD = threading.Thread(target=self.initialize_serial_continous_reader)
+        # self.READER_THREAD.start()
+        # self.send_at_command(command='usr.cn#AT')
+        #
+        # print(self.SERIAL_BUS.read())
 
         # set sms mode
-        res = self.send_at_command(command='AT+CMGF=0')
-
-        if res == 'ERROR':
-            res = self.send_at_command(command='AT+CMGF=1')
-
-        if res == 'ERROR':
-            print('Unable to initialize sms mode... exiting app..')
-            exit(0)
-        else:
-            self.SMS_MODE = 1
-
-        print('Started with sms mode = {}'.format(self.SMS_MODE))
-
-        t = threading.Thread(target=self.start_queue())
-        t.start()
+        # res = self.send_at_command(command='AT+CMGF=0')
+        #
+        # if res == 'ERROR':
+        #     res = self.send_at_command(command='AT+CMGF=1')
+        #
+        # if res == 'ERROR':
+        #     print('Unable to initialize sms mode... exiting app..')
+        #     exit(0)
+        # else:
+        #     self.SMS_MODE = 1
+        #
+        # print('Started with sms mode = {}'.format(self.SMS_MODE))
+        #
+        # t = threading.Thread(target=self.start_queue())
+        # t.start()
 
     def start_queue(self):
         print('Started Queue..')
@@ -173,30 +179,33 @@ class smsServer:
                 self.initialize_restarter_serial_bus()
 
     def initialize_serial_bus(self):
+        print(self.SERIAL_PORT)
+        print(self.SERIAL_BAUDRATE)
         try:
             self.SERIAL_BUS = serial.Serial(
-                port=self.SERIAL_PORT,  # port
+                port=self.SERIAL_PORT,
                 baudrate=self.SERIAL_BAUDRATE,
                 parity=self.SERIAL_PARITY_BITS,
                 stopbits=self.SERIAL_STOP_BITS,
                 bytesize=self.SERIAL_BYTESIZE,
-                timeout=self.SERIAL_TIMEOUT,
-                xonxoff=True,
-                rtscts=False,
-                dsrdtr=False,
+                xonxoff=True
             )
 
             if self.SERIAL_BUS.isOpen() == False:
                 self.SERIAL_BUS.open()
 
             self.MODEM_RESPONSIVE = True
+
+            self.SERIAL_BUS.write(b'usr.cn#AT\n')
+            print(self.SERIAL_BUS.read(32))
+
+
             print("Connected to serial device")
         except:
             print("Serial Port Unavailable Retrying...")
-            time.sleep(10)
+            time.sleep(2)
             self.initialize_serial_bus()
 
 
 if __name__ == "__main__":
-    load_dotenv()
     smsServer()

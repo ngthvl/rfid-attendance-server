@@ -15,4 +15,4 @@ ns                                  IN      A      192.168.10.100
 student-attendance.internal.        IN      A      192.168.10.100
 api.student-attendance.internal.    IN      A      192.168.10.100
 ws.student-attendance.internal.     IN      A      192.168.10.100
-
+writer.student-attendance.internal. IN      A      127.0.0.1
