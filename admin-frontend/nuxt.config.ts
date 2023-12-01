@@ -12,6 +12,7 @@ export default defineNuxtConfig({
     public: {
       rsaPubKey: pubKeyContent,
       apiBase: '/api',
+      storageBase: '/storage',
       appOwner: 'CODELINES',
       appNameSub: 'Student Attendance System'
     }

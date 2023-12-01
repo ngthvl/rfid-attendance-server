@@ -6,4 +6,6 @@ WORKDIR /home/app/
 
 COPY . .
 
+COPY .env.prod .env
+
 RUN npm i

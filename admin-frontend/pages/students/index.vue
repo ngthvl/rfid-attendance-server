@@ -3,6 +3,7 @@
 import jwtMiddleware from "../../middleware/jwtMiddleware";
 
 import { list as listStudents, students, filters, meta } from '~/models/student'
+import {storage} from "~/helpers/storage";
 
 listStudents();
 
@@ -10,6 +11,8 @@ interface hardwareParams {
   has_tag: boolean
   data: boolean
   hardware_present?: boolean
+  device_connected?: boolean
+  server_exists?: boolean
 }
 
 const config = useRuntimeConfig();
@@ -38,9 +41,10 @@ const hardwareStatusText = computed(()=>{
 
 const idPrintDialog: Ref<boolean> = ref(false);
 
-
 const printId = async () => {
   idPrintDialog.value = true
+
+  hardwareParameters.value.server_exists = false
 
   await fetchHinfo();
 
@@ -48,11 +52,29 @@ const printId = async () => {
 }
 
 const fetchHinfo = async () => {
-  const hInfo = await useFetch('http://writer.student-attendance.internal:15000', {method: "GET"});
-  const data = hInfo?.data?.value as hardwareParams
+  if (idPrintDialog.value) {
+    let t = null;
 
-  hardwareParameters.value.has_tag = data.has_tag
-  hardwareParameters.value.data = data.data
+    await (async () => {
+      t = setTimeout(()=>{
+        hardwareParameters.value.server_exists = false
+      }, 5000)
+    })()
+
+    const {data, error} = await useFetch('http://writer.student-attendance.internal:15000', {method: "GET"});
+
+    if (!error.value) {
+      if(t !== null) {
+        clearTimeout(t)
+      }
+      hardwareParameters.value.server_exists = true
+      const content = data.value as hardwareParams
+
+      hardwareParameters.value.has_tag = content.has_tag
+      hardwareParameters.value.data = content.data
+      hardwareParameters.value.device_connected = content.device_connected
+    }
+  }
 }
 
 definePageMeta({
@@ -133,12 +155,26 @@ definePageMeta({
 
     <v-dialog v-model="idPrintDialog" width="700">
       <v-card>
-        <v-card-title>
+        <v-card-title class="d-flex justify-space-between">
           <span>Print Student ID</span>
           <span>
-            <v-btn :color="hardwareStatusColor" disabled>{{ hardwareStatusText }}</v-btn>
+            <v-chip :color="hardwareStatusColor">{{ hardwareStatusText }}</v-chip>
           </span>
         </v-card-title>
+        <v-card-item>
+          <v-alert color="warning" v-if="hardwareParameters.device_connected === false && hardwareParameters.server_exists">Warning: Please check RFID Writer Connection or try reconnecting the device.</v-alert>
+          <v-alert color="warning" v-if="hardwareParameters.server_exists === false">
+            Please Start Companion app by <a href="codelines-rfid://companion-app.open">clicking this link</a>, or download by clicking this link.
+          </v-alert>
+          <v-row class="my-4">
+            <v-col>
+              <v-img :src="storage('/id_card/front.png')" alt=""/>
+            </v-col>
+            <v-col>
+              <v-img :src="storage('/id_card/back.png')" alt=""/>
+            </v-col>
+          </v-row>
+        </v-card-item>
       </v-card>
     </v-dialog>
   </v-container>
