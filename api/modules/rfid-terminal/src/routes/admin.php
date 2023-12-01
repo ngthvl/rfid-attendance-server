@@ -8,3 +8,9 @@ Route::middleware(['api', 'auth:admin'])->prefix('api/v1/admin/terminals')->grou
     Route::get('/{id}', [\Tamani\RfidTerminal\Http\Controllers\Admin\RfidTerminalController::class, 'show']);
     Route::post('/{id}/authorize', [\Tamani\RfidTerminal\Http\Controllers\Admin\RfidTerminalController::class, 'authorizeDevice']);
 });
+
+// admin routes
+Route::middleware(['api', 'auth:admin'])->prefix('api/v1/admin/rfid-tags')->group(function(){
+    Route::post('/check', [\Tamani\RfidTerminal\Http\Controllers\Admin\TagAllocationController::class, 'checkAllocation']);
+    Route::post('/allocate', [\Tamani\RfidTerminal\Http\Controllers\Admin\TagAllocationController::class, 'allocateTag']);
+});

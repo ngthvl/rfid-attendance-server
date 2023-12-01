@@ -18,7 +18,8 @@ export default defineNuxtConfig({
     }
   },
   modules: [    
-    '@invictus.codes/nuxt-vuetify'  
+    '@invictus.codes/nuxt-vuetify',
+    '@pinia/nuxt',
   ],  
   vuetify: {
     vuetifyOptions: { },

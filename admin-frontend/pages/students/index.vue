@@ -2,79 +2,17 @@
 
 import jwtMiddleware from "../../middleware/jwtMiddleware";
 
-import { list as listStudents, students, filters, meta } from '~/models/student'
-import {storage} from "~/helpers/storage";
+import { list as listStudents, students, filters, meta, Student as StudentType } from '~/models/student'
 
 listStudents();
-
-interface hardwareParams {
-  has_tag: boolean
-  data: boolean
-  hardware_present?: boolean
-  device_connected?: boolean
-  server_exists?: boolean
-}
 
 const config = useRuntimeConfig();
 const sampleFile = `${config.public.apiBase}/admin/download-file?file=sample-documents/student-update-form.csv`
 
-const hardwareParameters: Ref<hardwareParams> = ref({
-  has_tag: false,
-  data: false,
-});
+const printDialog = ref();
 
-const hardwareStatusColor = computed(()=>{
-  if (hardwareParameters.value.has_tag) {
-    return 'success'
-  } else {
-    return 'error'
-  }
-})
-
-const hardwareStatusText = computed(()=>{
-  if (hardwareParameters.value.has_tag) {
-    return 'Tag Detected'
-  } else {
-    return 'No Tag Found'
-  }
-})
-
-const idPrintDialog: Ref<boolean> = ref(false);
-
-const printId = async () => {
-  idPrintDialog.value = true
-
-  hardwareParameters.value.server_exists = false
-
-  await fetchHinfo();
-
-  setInterval(fetchHinfo, 500);
-}
-
-const fetchHinfo = async () => {
-  if (idPrintDialog.value) {
-    let t = null;
-
-    await (async () => {
-      t = setTimeout(()=>{
-        hardwareParameters.value.server_exists = false
-      }, 5000)
-    })()
-
-    const {data, error} = await useFetch('http://writer.student-attendance.internal:15000', {method: "GET"});
-
-    if (!error.value) {
-      if(t !== null) {
-        clearTimeout(t)
-      }
-      hardwareParameters.value.server_exists = true
-      const content = data.value as hardwareParams
-
-      hardwareParameters.value.has_tag = content.has_tag
-      hardwareParameters.value.data = content.data
-      hardwareParameters.value.device_connected = content.device_connected
-    }
-  }
+const printId = (student: StudentType) => {
+  printDialog.value.show(student)
 }
 
 definePageMeta({
@@ -136,7 +74,7 @@ definePageMeta({
                   <v-icon icon="mdi-dots-vertical"></v-icon>
                   <v-menu activator="parent">
                     <v-list>
-                      <v-list-item title="Print ID" @click="printId"></v-list-item>
+                      <v-list-item title="Print ID" @click="printId(student)"></v-list-item>
                       <v-list-item title="Update Profile"></v-list-item>
                       <v-list-item title="Attendance"></v-list-item>
                       <v-list-item title="Detections"></v-list-item>
@@ -153,29 +91,6 @@ definePageMeta({
       </v-card-item>
     </v-card>
 
-    <v-dialog v-model="idPrintDialog" width="700">
-      <v-card>
-        <v-card-title class="d-flex justify-space-between">
-          <span>Print Student ID</span>
-          <span>
-            <v-chip :color="hardwareStatusColor">{{ hardwareStatusText }}</v-chip>
-          </span>
-        </v-card-title>
-        <v-card-item>
-          <v-alert color="warning" v-if="hardwareParameters.device_connected === false && hardwareParameters.server_exists">Warning: Please check RFID Writer Connection or try reconnecting the device.</v-alert>
-          <v-alert color="warning" v-if="hardwareParameters.server_exists === false">
-            Please Start Companion app by <a href="codelines-rfid://companion-app.open">clicking this link</a>, or download by clicking this link.
-          </v-alert>
-          <v-row class="my-4">
-            <v-col>
-              <v-img :src="storage('/id_card/front.png')" alt=""/>
-            </v-col>
-            <v-col>
-              <v-img :src="storage('/id_card/back.png')" alt=""/>
-            </v-col>
-          </v-row>
-        </v-card-item>
-      </v-card>
-    </v-dialog>
+    <students-print-i-d-dialog ref="printDialog"></students-print-i-d-dialog>
   </v-container>
 </template>
