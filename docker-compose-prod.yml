@@ -43,6 +43,7 @@ services:
     - ./nginx/prod.conf:/etc/nginx/nginx.conf
     - ./api:/var/www/html
     - ./api/.env.production:/var/www/html/.env
+    - - laravel_logs:/var/www/html/storage/logs
 
   db:
     image: postgres:15
@@ -90,6 +91,7 @@ services:
       # - ./.secrets/oauth-private.key:/var/www/html/storage/oauth-private.key
       # - ./.secrets/oauth-public.key:/var/www/html/storage/oauth-public.key
       - sms_server_jobs:/var/www/html/storage/app/sms-jobs
+      - laravel_logs:/var/www/html/storage/logs
 
   admin_frontend:
     build:
@@ -123,3 +125,4 @@ networks:
 volumes:
   postgres_data:
   sms_server_jobs:
+  laravel_logs:
