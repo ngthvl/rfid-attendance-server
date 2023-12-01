@@ -116,7 +116,7 @@ services:
 networks:
   server-backend-network:
     driver: bridge
-    internal: true
+#    internal: true
   server-frontend-network:
     driver: bridge
 
