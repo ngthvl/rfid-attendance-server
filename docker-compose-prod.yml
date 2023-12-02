@@ -89,8 +89,8 @@ services:
       - server-backend-network
     user: 'www-data:www-data'
     volumes:
-      # - ./.secrets/oauth-private.key:/var/www/html/storage/oauth-private.key
-      # - ./.secrets/oauth-public.key:/var/www/html/storage/oauth-public.key
+      - ./.secrets/oauth-private.key:/var/www/html/storage/oauth-private.key
+      - ./.secrets/oauth-public.key:/var/www/html/storage/oauth-public.key
       - sms_server_jobs:/var/www/html/storage/app/sms-jobs
       - laravel_logs:/var/www/html/storage/logs
 
