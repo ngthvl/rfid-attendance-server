@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import jwtMiddleware from "../../middleware/jwtMiddleware";
-import {Student, save} from "~/models/student";
+import {Student, useStudentsStore} from "~/models/student";
 
 const studentData: Ref = ref({
   student_id: '',
@@ -12,13 +12,15 @@ const studentData: Ref = ref({
   contact_address: '',
 });
 
+const studentStore = useStudentsStore();
+
 definePageMeta({
   middleware: jwtMiddleware,
   layout: 'admin',
 })
 
 const saveStudent = () => {
-  save(studentData.value)
+  studentStore.save(studentData.value)
 }
 
 </script>
