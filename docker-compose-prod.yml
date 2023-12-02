@@ -92,7 +92,7 @@ services:
       - ./.secrets/oauth-private.key:/var/www/html/storage/oauth-private.key
       - ./.secrets/oauth-public.key:/var/www/html/storage/oauth-public.key
       - sms_server_jobs:/var/www/html/storage/app/sms-jobs
-      - ./api/storage:/var/www/html/storage/logs
+      - ./api/storage:/var/www/html/storage
 
   admin_frontend:
     build:
