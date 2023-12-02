@@ -1,7 +1,7 @@
 import {Ref} from "vue";
 import type { ResponseMeta } from "~/types/meta";
 import { ResponseMetaDefaults } from '~/types/meta';
-import {ClientErrorType} from "~/types/errortype";
+import {defineStore} from "pinia";
 
 export interface Student {
   student_id: string
@@ -23,64 +23,76 @@ interface filterType {
   page: number
 }
 
-const params: Ref<{
-  'filter[search]': string;
-  'page': number;
-}> = ref({
-  'filter[search]': '',
-  'page': 1,
-})
 
-export const filters: Ref<filterType> = ref({
-  search: "",
-  page: 1
-});
 
-const router = () => useRouter();
-const route = () => useRoute();
+export const useStudentsStore = defineStore('students', () => {
+  const students: Ref<Student[]> = ref([]);
 
-watch(filters, (newstate: filterType)=>{
-  params.value['filter[search]'] = newstate.search;
-  params.value['page'] = newstate.page;
+  const params: Ref<{
+    'filter[search]': string;
+    'page': number;
+  }> = ref({
+    'filter[search]': '',
+    'page': 1,
+  })
 
-  router().push({
-    path: route().path,
-    query: newstate
-  });
+  const router = () => useRouter();
+  const route = () => useRoute();
 
-  list();
-}, {
-  deep: true
-})
+  const listStudents = async () => {
+    const {data, error} = await useApi('/admin/students', {
+      params: filters.value,
+      method: "GET"
+    });
 
-export const students: Ref<Student[]> = ref([]);
+    if (data?.value?.data) {
+      students.value = data?.value?.data;
+    }
 
-export const meta: Ref<ResponseMeta> = ref(ResponseMetaDefaults);
-
-export const list = async () => {
-  const {data, error} = await useApi('/admin/students', {
-    params: filters.value,
-    method: "GET"
-  });
-
-  if (data?.value?.data) {
-    students.value = data?.value?.data;
+    if (data?.value?.meta) {
+      meta.value = data?.value?.meta;
+    }
   }
 
-  if (data?.value?.meta) {
-    meta.value = data?.value?.meta;
+  const save = async (student: Student) => {
+    useApi('/admin/students', {
+      method: "POST",
+      body: student
+    })
   }
-}
 
-export const save = async (student: Student) => {
-  useApi('/admin/students', {
-    method: "POST",
-    body: student
-  })
-}
+  const updateFromCsv = async () => {
+    await useApi('/admin/students/import', {
+      method: 'POST'
+    })
+  }
 
-export const updateFromCsv = async () => {
-  await useApi('/admin/students/import', {
-    method: 'POST'
+  const meta: Ref<ResponseMeta> = ref(ResponseMetaDefaults);
+
+  const filters: Ref<filterType> = ref({
+    search: "",
+    page: 1
+  });
+
+  watch(filters, (newstate: filterType)=>{
+    params.value['filter[search]'] = newstate.search;
+    params.value['page'] = newstate.page;
+
+    router().push({
+      path: route().path,
+      query: newstate
+    });
+
+    listStudents();
+  }, {
+    deep: true
   })
-}
+
+  return {
+    students,
+    meta,
+    filters,
+    save,
+    listStudents
+  }
+})

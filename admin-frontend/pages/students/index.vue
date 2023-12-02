@@ -2,9 +2,14 @@
 
 import jwtMiddleware from "../../middleware/jwtMiddleware";
 
-import { list as listStudents, students, filters, meta, Student as StudentType } from '~/models/student'
+import {Student as StudentType, useStudentsStore} from '~/models/student'
+import {storeToRefs} from "pinia";
 
-listStudents();
+const studentstore = useStudentsStore();
+
+const { students, filters, meta } = storeToRefs(studentstore)
+
+studentstore.listStudents();
 
 const config = useRuntimeConfig();
 const sampleFile = `${config.public.apiBase}/admin/download-file?file=sample-documents/student-update-form.csv`

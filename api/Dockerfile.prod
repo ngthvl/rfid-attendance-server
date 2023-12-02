@@ -26,10 +26,10 @@ RUN apt-get update \
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
   && docker-php-ext-install pdo pdo_pgsql pgsql zip bcmath gd
 
-RUN chown -R www-data:www-data /var/www/html
-
 COPY ./api/ .
 COPY ./api/.env.development ./.env
+
+RUN chown -R www-data:www-data /var/www/html/storage
 
 #COPY ./../.secrets/oauth-private.key ./storage/oauth-private.key
 #COPY ./../.secrets/oauth-public.key ./storage/oauth-public.key

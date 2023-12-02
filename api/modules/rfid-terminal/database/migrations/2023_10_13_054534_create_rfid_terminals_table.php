@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('device_name')->nullable();
             $table->string('ip_address')->nullable();
+            $table->boolean('authenticated')->default(false);
             $table->json('devices_status')->nullable();
             $table->timestamps();
         });

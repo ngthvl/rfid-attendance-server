@@ -42,7 +42,7 @@ const interval = ref();
 const tagAssigned: Ref<string | undefined> = ref();
 
 watch(idPrintDialog, async (nw, old)=>{
-  if(nw){
+  if(nw && !student.value?.rfid_tag){
     hardwareParameters.value.server_exists = false;
     fetchHinfo();
     interval.value = setInterval(fetchHinfo, 500);
@@ -87,7 +87,6 @@ const assignCurrentTag = async () => {
     }
   })
 
-  console.log(data, error)
   tagAssigned.value = hardwareParameters.value.data as string | undefined;
 }
 
@@ -112,8 +111,9 @@ defineExpose({
       <v-card-title class="d-flex justify-space-between">
         <span>Print Student ID</span>
         <span>
-            <v-chip :color="hardwareStatusColor">{{ hardwareStatusText }}</v-chip>
-          </span>
+          <v-chip color="primary" v-if="student?.rfid_tag">Student has existing tag.</v-chip>
+          <v-chip v-else :color="hardwareStatusColor">{{ hardwareStatusText }}</v-chip>
+        </span>
       </v-card-title>
       <v-card-item>
         <v-alert color="warning" v-if="hardwareParameters.device_connected === false && hardwareParameters.server_exists">Warning: Please check RFID Writer Connection or try reconnecting the device.</v-alert>
@@ -140,7 +140,8 @@ defineExpose({
           class="mr-3"
           :append-icon="!!tagAssigned ? 'mdi-check-all' : ''"
         >{{ !!tagAssigned ? 'Tag Assigned' : 'Assign Tag' }}</v-btn>
-        <v-btn color="primary">Print ID</v-btn>
+        <v-btn color="primary" class="mr-3">Print ID</v-btn>
+        <v-btn color="error" v-if="student?.rfid_tag">Clear Tag Assignment</v-btn>
       </v-card-item>
     </v-card>
   </v-dialog>
