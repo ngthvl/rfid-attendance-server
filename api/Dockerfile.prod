@@ -1,7 +1,5 @@
 FROM php:8.2-fpm
 
-USER www-data
-
 RUN mkdir -p /var/www/html
 
 WORKDIR /var/www/html
@@ -28,8 +26,6 @@ RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
 COPY ./api/ .
 COPY ./api/.env.development ./.env
 
-RUN chown -R www-data:www-data /var/www/html/storage
-
 #COPY ./../.secrets/oauth-private.key ./storage/oauth-private.key
 #COPY ./../.secrets/oauth-public.key ./storage/oauth-public.key
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -45,6 +41,9 @@ COPY ./api/supervisord-dev.conf /etc/supervisor/conf.d/supervisord.conf
 
 COPY ./.secrets/oauth-private.key /var/www/html/storage/oauth-private.key
 COPY ./.secrets/oauth-public.key /var/www/html/storage/oauth-public.key
+
+RUN chown -R www-data:www-data /var/www/html/storage
+USER www-data
 
 EXPOSE 9000
 CMD ["php-fpm"]
