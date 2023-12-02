@@ -6,6 +6,7 @@ WORKDIR /home/app/
 
 COPY ./admin-frontend .
 COPY ./.secrets/oauth-public.key ./.secrets/oauth-public.key
+COPY .env.prod .env
 
 RUN npm install pm2 -g
 
