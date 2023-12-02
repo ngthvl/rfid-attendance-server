@@ -11,8 +11,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       rsaPubKey: pubKeyContent,
-      apiBase: '/api',
-      storageBase: '/storage',
+      apiBase: 'http://api.student-attendance.internal/api/v1',
+      storageBase: 'http://api.student-attendance.internal/storage',
       appOwner: 'CODELINES',
       appNameSub: 'Student Attendance System'
     }

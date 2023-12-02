@@ -103,6 +103,8 @@ services:
       - api
     restart: always
     tty: true
+    volumes:
+    - ./admin-frontend/.env.prod /home/app/.env
 
   sms_server:
     build:

@@ -8,9 +8,7 @@ use Tamani\Students\Models\Student;
 
 class StudentResource extends JsonResource
 {
-    /*
-     * @var Tamani\Admin\Models\Admin
-     */
+    /** @var Student */
     public $resource;
 
     /**
@@ -20,8 +18,16 @@ class StudentResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return $this->resource->only(array_merge(Student::FILLABLE, [
-            'id', 'created_at'
-        ]));
+        return [
+            'id' => $this->id,
+            'student_id' => $this->student_id,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'contact_person' => $this->contact_person,
+            'contact_number' => $this->contact_number,
+            'contact_address' => $this->contact_address,
+            'created_at' => $this->created_at,
+            'rfid_tag' => $this->activeRfidTag()
+        ];
     }
 }

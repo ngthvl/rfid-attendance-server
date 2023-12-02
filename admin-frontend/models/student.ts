@@ -4,14 +4,18 @@ import { ResponseMetaDefaults } from '~/types/meta';
 import {ClientErrorType} from "~/types/errortype";
 
 export interface Student {
-  student_id: String
-  first_name: String
-  last_name: String
-  contact_person: String
-  contact_number: String
-  contact_address: String
-  id?: String
-  created_at?: String
+  student_id: string
+  first_name: string
+  last_name: string
+  contact_person: string
+  contact_number: string
+  contact_address: string
+  id?: string
+  created_at?: string,
+  rfid_tag: null | {
+    id: string,
+    tag_data: string
+  }
 }
 
 interface filterType {

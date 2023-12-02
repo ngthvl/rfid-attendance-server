@@ -59,6 +59,7 @@ definePageMeta({
             <th>Given Name</th>
             <th>Contact #</th>
             <th>Contact Person</th>
+            <th>Tagged</th>
             <th></th>
           </tr>
           </thead>
@@ -69,6 +70,7 @@ definePageMeta({
               <td>{{ student.first_name }}</td>
               <td>{{ student.contact_number }}</td>
               <td>{{ student.contact_person }}</td>
+              <td>{{ student.rfid_tag ? 'YES' : 'NO' }}</td>
               <td class="text-right">
                 <v-btn color="primary" rounded="xl">
                   <v-icon icon="mdi-dots-vertical"></v-icon>

@@ -52,7 +52,7 @@ watch(idPrintDialog, async (nw, old)=>{
 })
 
 const fetchHinfo = async () => {
-  if (idPrintDialog.value) {
+  if (idPrintDialog.value && !student.rfid_tag) {
     let t = null;
 
     await (async () => {
