@@ -43,6 +43,7 @@ COPY ./.secrets/oauth-private.key /var/www/html/storage/oauth-private.key
 COPY ./.secrets/oauth-public.key /var/www/html/storage/oauth-public.key
 
 RUN chown -R www-data:www-data /var/www/html/storage
+RUN chmod 777 /var/www/html/storage -R
 USER www-data
 
 EXPOSE 9000
