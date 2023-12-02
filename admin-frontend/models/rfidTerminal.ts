@@ -53,10 +53,17 @@ export const useRfidTerminalStore = defineStore('rfid_terminal', () => {
     }
   }
 
+  const authorizeTerminal = async (terminal: RfidTerminalType) => {
+    const { data, error } = await useApi(`/admin/terminals/${terminal.id}/authorize`, {
+      method: "POST",
+    })
+  }
+
   return {
     terminals,
     filters,
     meta,
     listTerminals,
+    authorizeTerminal,
   }
 })

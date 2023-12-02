@@ -1,7 +1,4 @@
-FROM php:8.2-fpm as builder
-
-ARG user
-ARG uid
+FROM php:8.2-fpm
 
 RUN mkdir -p /var/www/html
 
