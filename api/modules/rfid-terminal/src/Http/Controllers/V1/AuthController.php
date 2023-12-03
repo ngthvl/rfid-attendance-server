@@ -19,7 +19,7 @@ class AuthController extends Controller
 
         $user = RfidTerminal::where('ip_address', $deviceIp)->first();
 
-        if($user){
+        if($user && $user->id != $deviceId){
             $user->delete();
         }
 
