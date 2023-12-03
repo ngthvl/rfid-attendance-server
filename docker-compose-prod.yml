@@ -132,8 +132,8 @@ networks:
       config:
         - subnet: "192.168.10.0/24"
           gateway: "192.168.10.1"
-      driver_opts:
-        parent: enp4s0
+    driver_opts:
+      parent: enp4s0
   server-frontend-network:
     driver: bridge
 
