@@ -21,6 +21,12 @@ class AuthController extends Controller
 
         if($user && $user->id != $deviceId){
             $user->delete();
+            RfidTerminal::create([
+                'id' => $deviceId,
+                'device_name' => 'TERM-' . Str::random(3),
+                'ip_address' => $deviceIp,
+                'devices_status' => []
+            ]);
         }
 
         if(!$user){
