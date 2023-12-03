@@ -17,7 +17,11 @@ class AuthController extends Controller
         $deviceId = $request->input('device-id');
         $deviceIp = $request->server->get('REMOTE_ADDR');
 
-        $user = RfidTerminal::where('id', $deviceId)->first();
+        $user = RfidTerminal::where('ip_address', $deviceIp)->first();
+
+        if($user){
+            $user->delete();
+        }
 
         if(!$user){
             RfidTerminal::create([
