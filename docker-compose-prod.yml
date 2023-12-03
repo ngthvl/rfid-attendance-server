@@ -86,8 +86,9 @@ services:
     environment:
       - COMPOSER_ALLOW_SUPERUSER=1
     networks:
-      - server-backend-network
-      - server-vlan-network
+      server-backend-network:
+      server-ipnet:
+        ipv4_address: 192.168.10.10
     user: 'www-data:www-data'
     volumes:
       - ./.secrets/oauth-private.key:/var/www/html/storage/oauth-private.key
@@ -123,9 +124,16 @@ networks:
   server-backend-network:
     driver: bridge
     internal: true
-  server-vlan-network:
-    driver: bridge
-    external: true
+  server-ipnet:
+    driver: ipvlan
+    attachable: true
+    ipam:
+      driver: default
+      config:
+        - subnet: "192.168.10.0/24"
+          gateway: "192.168.10.1"
+      driver_opts:
+        parent: enp4s0
   server-frontend-network:
     driver: bridge
 
