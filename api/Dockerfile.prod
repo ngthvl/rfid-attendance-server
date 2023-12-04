@@ -47,5 +47,5 @@ RUN chmod 777 /var/www/html/storage -R
 USER www-data
 
 EXPOSE 9000
-#CMD ["php-fpm"]
-CMD ["/usr/bin/supervisord"]
+CMD ["php-fpm"]
+#CMD ["/usr/bin/supervisord"]
