@@ -27,8 +27,8 @@ class AttendanceController extends Controller
         $out->save();
 
         /** @var Student $student */
-        $student = Student::where('student_id', $uid)->first();
-        $student->notify(new NotifyParentOnDetect($out));
+//        $student = Student::where('student_id', $uid)->first();
+//        $student->notify(new NotifyParentOnDetect($out));
 
         return $this->respondWithEmptyData();
     }

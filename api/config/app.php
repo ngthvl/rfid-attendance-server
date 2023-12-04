@@ -168,6 +168,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\TelescopeServiceProvider::class,
         \Tamani\Admin\Providers\AdminServiceProvider::class,
         \Tamani\RfidTerminal\Providers\RfidTerminalServiceProvider::class,
         \Tamani\Students\Providers\StudentsServiceProvider::class,
