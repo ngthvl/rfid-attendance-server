@@ -14,3 +14,8 @@ Route::middleware(['api', 'auth:admin'])->prefix('api/v1/admin/rfid-tags')->grou
     Route::post('/check', [\Tamani\RfidTerminal\Http\Controllers\Admin\TagAllocationController::class, 'checkAllocation']);
     Route::post('/allocate', [\Tamani\RfidTerminal\Http\Controllers\Admin\TagAllocationController::class, 'allocateTag']);
 });
+
+// admin routes
+Route::middleware(['api', 'auth:admin'])->prefix('api/v1/admin/rfid-detections')->group(function(){
+    Route::post('/', [\Tamani\RfidTerminal\Http\Controllers\Admin\RfidTagDetectionController::class, 'index']);
+});
