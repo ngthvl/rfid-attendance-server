@@ -17,5 +17,5 @@ Route::middleware(['api', 'auth:admin'])->prefix('api/v1/admin/rfid-tags')->grou
 
 // admin routes
 Route::middleware(['api', 'auth:admin'])->prefix('api/v1/admin/rfid-detections')->group(function(){
-    Route::post('/', [\Tamani\RfidTerminal\Http\Controllers\Admin\RfidTagDetectionController::class, 'index']);
+    Route::get('/', [\Tamani\RfidTerminal\Http\Controllers\Admin\RfidTagDetectionController::class, 'index']);
 });
