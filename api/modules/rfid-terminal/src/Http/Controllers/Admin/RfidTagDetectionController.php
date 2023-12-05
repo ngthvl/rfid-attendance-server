@@ -11,7 +11,7 @@ class RfidTagDetectionController
 {
     public function index()
     {
-        $qb = QueryBuilder::for(RfidOutput::class)->get();
+        $qb = QueryBuilder::for(RfidOutput::class)->count();
 
         return $qb;
     }
