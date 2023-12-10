@@ -88,7 +88,10 @@ class smsServer:
         response = self.SERIAL_BUS.readall()
         result = re.search('\r\n\r\n(.*)\r\n', response.decode('ascii'))
         print(response)
-        return str(result.group(1))
+        if result is not None:
+            return str(result.group(1))
+
+        return 'ERROR'
 
     def initialize_serial_bus(self):
         print(self.SERIAL_PORT)
