@@ -140,4 +140,5 @@ networks:
 volumes:
   postgres_data:
   sms_server_jobs:
+    driver: local
   laravel_logs:

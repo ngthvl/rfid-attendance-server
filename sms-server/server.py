@@ -4,6 +4,8 @@ from pathlib import Path
 from lib.codec import GSM
 from dotenv import load_dotenv
 
+
+import re
 import threading
 import serial
 import requests
@@ -12,12 +14,12 @@ class smsServer:
     JOBS_PATH = os.getenv('JOBS_PATH')
 
     SERIAL_BUS = None
-    SERIAL_PORT = None
-    SERIAL_BAUDRATE = None
+    SERIAL_PORT = os.getenv('SERIAL_PORT')
+    SERIAL_BAUDRATE = os.getenv('SERIAL_BAUDRATE')
     SERIAL_PARITY_BITS = serial.PARITY_NONE
     SERIAL_STOP_BITS = serial.STOPBITS_ONE
     SERIAL_BYTESIZE = serial.EIGHTBITS
-    SERIAL_TIMEOUT = 2
+    SERIAL_TIMEOUT = 0.2
 
     CURRENT_REPLY = None
 
@@ -40,34 +42,13 @@ class smsServer:
 
         self.SERIAL_PORT = os.getenv('SERIAL_PORT')
         self.SERIAL_BAUDRATE = os.getenv('SERIAL_BAUDRATE')
+        self.JOBS_PATH = os.getenv('JOBS_PATH')
         self.begin_app_init()
-        # t = threading.Thread(target=self.initialize_restarter_serial_bus())
-        # t.start()
 
     def begin_app_init(self):
         self.initialize_serial_bus()
-        # self.READER_THREAD = threading.Thread(target=self.initialize_serial_continous_reader)
-        # self.READER_THREAD.start()
-        # self.send_at_command(command='usr.cn#AT')
-        #
-        # print(self.SERIAL_BUS.read())
-
-        # set sms mode
-        # res = self.send_at_command(command='AT+CMGF=0')
-        #
-        # if res == 'ERROR':
-        #     res = self.send_at_command(command='AT+CMGF=1')
-        #
-        # if res == 'ERROR':
-        #     print('Unable to initialize sms mode... exiting app..')
-        #     exit(0)
-        # else:
-        #     self.SMS_MODE = 1
-        #
-        # print('Started with sms mode = {}'.format(self.SMS_MODE))
-        #
-        # t = threading.Thread(target=self.start_queue())
-        # t.start()
+        t = threading.Thread(target=self.start_queue())
+        t.start()
 
     def start_queue(self):
         print('Started Queue..')
@@ -81,10 +62,15 @@ class smsServer:
                         myvars[name.strip()] = var.rstrip()
                 print("file - " + repr(path))
                 data = self.send_sms(params=myvars)
-                webhook_url = myvars['WEBHOOK']
-                t = threading.Thread(target=self.send_to_webhook(url=webhook_url, data=data))
-                t.start()
-                os.remove(path)
+                if data == 'OK':
+                    webhook_url = myvars['WEBHOOK']
+                    t = threading.Thread(target=self.send_to_webhook(url=webhook_url, data=data))
+                    t.start()
+                    os.remove(path)
+                else:
+                    print("{}: {}", format(data, str(os.path.basename(path))))
+
+                # time.sleep(0.5)
 
     def send_to_webhook(self, url, data):
         try:
@@ -95,88 +81,14 @@ class smsServer:
             pass
 
     def send_sms(self, params):
-        result = 'Not Sent'
-        if self.SMS_MODE == 0:
-            rep = self.send_at_command(
-                command='AT+CSCA={}'.format(params['PHONE_NUMBER'])
-            )
-            ln = len(params['MESSAGE'])
-            rep = self.send_at_command('AT+CMGS={}'.format(ln))
-            if rep == '>':
-                result = self.send_at_command(
-                    command=GSM.encode(params['MESSAGE']),
-                    terminator=bytes([26])
-                )
-        elif self.SMS_MODE == 1:
-            rep = self.send_at_command(
-                command='AT+CMGS={}'.format(params['PHONE_NUMBER'])
-            )
-            if rep == '>':
-                result = self.send_at_command(
-                    command=params['MESSAGE'].replace(' ', '_'),
-                    terminator=bytes([26])
-                )
-
-        return result
-
-    def send_at_command(self, command, terminator=b'\r'):
-        print(command)
-        self.CURRENT_REPLY = None
-        self.SERIAL_BUS.write(command.encode() + terminator)
-        while self.CURRENT_REPLY is None and self.MODEM_RESPONSIVE:
-            self.LAST_STOP += 0.1
-            if self.LAST_STOP >= self.TIMEOUT_CONCLUDE_UNRESPONSIVE:
-                self.initialize_restart_modem()
-                return ''
-            time.sleep(0.1)
-        self.LAST_STOP = 0
-        reply = self.CURRENT_REPLY
-        self.CURRENT_REPLY = None
-        print(reply)
-        return reply
-
-    def initialize_restart_modem(self):
-        print('Modem Unresponsive, shutting down...')
-        self.MODEM_RESPONSIVE = False
-        self.LAST_STOP = 0
-        self.SERIAL_BUS.close()
-        self.SERIAL_BUS = None
-        self.begin_app_init()
-        if self.RESTARTER_BUS is not None:
-            self.RESTARTER_BUS.write(b'RSTD')
-
-    def initialize_serial_continous_reader(self):
-        try:
-            print('Reader Started')
-            while self.MODEM_RESPONSIVE:
-                if self.SERIAL_BUS.in_waiting > 0:
-                    self.CURRENT_REPLY = None
-                    self.CURRENT_REPLY = self.SERIAL_BUS.readline().decode().strip()
-
-            print('Reader Stopped')
-        except:
-            print('Reader encountered an error')
-            self.initialize_restart_modem()
-
-    def initialize_restarter_serial_bus(self):
-        if self.RESTARTER_PORT is not None:
-            try:
-                self.RESTARTER_BUS = serial.Serial(
-                    port=self.RESTARTER_PORT,  # port
-                    baudrate=self.RESTARTER_BAUDRATE,
-                    parity=self.SERIAL_PARITY_BITS,
-                    stopbits=self.SERIAL_STOP_BITS,
-                    bytesize=self.SERIAL_BYTESIZE,
-                )
-
-                if self.RESTARTER_BUS.isOpen() == False:
-                    self.RESTARTER_BUS.open()
-
-                self.RESTARTER_BUS.write('ats')
-                print("Connected to restarter device")
-            except:
-                time.sleep(10)
-                self.initialize_restarter_serial_bus()
+        command = 'AT+SMSEND="{}",3,"{}"'.format(params['PHONE_NUMBER'], params['MESSAGE'])
+        command = bytes(command, 'ascii')
+        command += b'\x0d\x0a'
+        self.SERIAL_BUS.write(command)
+        response = self.SERIAL_BUS.readall()
+        result = re.search('\r\n\r\n(.*)\r\n', response.decode('ascii'))
+        print(response)
+        return str(result.group(1))
 
     def initialize_serial_bus(self):
         print(self.SERIAL_PORT)
@@ -188,17 +100,14 @@ class smsServer:
                 parity=self.SERIAL_PARITY_BITS,
                 stopbits=self.SERIAL_STOP_BITS,
                 bytesize=self.SERIAL_BYTESIZE,
-                xonxoff=True
+                xonxoff=True,
+                timeout=self.SERIAL_TIMEOUT
             )
 
             if self.SERIAL_BUS.isOpen() == False:
                 self.SERIAL_BUS.open()
 
             self.MODEM_RESPONSIVE = True
-
-            self.SERIAL_BUS.write(b'usr.cn#AT\n')
-            print(self.SERIAL_BUS.read(32))
-
 
             print("Connected to serial device")
         except:
