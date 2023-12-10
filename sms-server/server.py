@@ -93,6 +93,7 @@ class smsServer:
 
     def send_at_command(self, command):
         command += b'\x0d\x0a'
+        print(command.hex())
         self.SERIAL_BUS.write(command)
         return self.SERIAL_BUS.readall()
 
