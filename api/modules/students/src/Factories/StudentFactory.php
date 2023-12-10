@@ -17,7 +17,7 @@ class StudentFactory extends Factory
             'last_name' => $this->faker->lastName(),
             'student_id' => 'HS-' . strtoupper(Str::random(10)),
             'contact_person' => $this->faker->name(),
-            'contact_number' => $this->faker->e164PhoneNumber(),
+            'contact_number' => '639457201016',
             'contact_address' => $this->faker->address(),
         ];
     }

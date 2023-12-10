@@ -117,7 +117,7 @@ services:
       - sms_server_jobs:/home/app/jobs
     restart: always
     devices:
-      - /dev/ttyS0
+      - /dev/ttyUSB0
     tty: true
 
 networks:
