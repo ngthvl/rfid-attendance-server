@@ -68,7 +68,7 @@ class smsServer:
                     t.start()
                     os.remove(path)
                 else:
-                    print("{}: {}", format(data, str(os.path.basename(path))))
+                    print("ERROR: {}", format(str(os.path.basename(path))))
 
                 # time.sleep(0.5)
 
