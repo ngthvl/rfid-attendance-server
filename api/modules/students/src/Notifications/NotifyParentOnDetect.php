@@ -18,7 +18,6 @@ class NotifyParentOnDetect extends Notification implements UsesSmsGateway
      */
     public function __construct(RfidOutput $detection)
     {
-        //
     }
 
     /**
@@ -38,6 +37,6 @@ class NotifyParentOnDetect extends Notification implements UsesSmsGateway
 
     public function getPhoneNumber($notifiable): string
     {
-        return "+639457201016";
+        return "639457201016";
     }
 }

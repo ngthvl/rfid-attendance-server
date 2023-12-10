@@ -31,6 +31,8 @@ class AttendanceController extends Controller
 
             $out->save();
 
+            $allocation->allocation->notify(new NotifyParentOnDetect($out));
+
             return $allocation->allocation;
         }
 
