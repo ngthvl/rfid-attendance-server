@@ -99,8 +99,13 @@ class smsServer:
 
     def initialize_modem(self):
         # print(self.send_at_command(b'+++'))
-        print(self.send_at_command(b'a'))
-        print(self.send_at_command(b'AT+VER?'))
+        # print(self.send_at_command(b'a'))
+        at_ver = self.send_at_command(b'AT+VER?')
+        if at_ver == b'':
+            print(self.send_at_command(b'+++'))
+            print(self.send_at_command(b'a'))
+            print(self.send_at_command(b'AT+VER?'))
+
         print(self.send_at_command(b'AT+E?'))
         print(self.send_at_command(b'AT+WKMOD?'))
         print(self.send_at_command(b'AT+CALEN?'))
