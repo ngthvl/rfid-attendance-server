@@ -94,7 +94,7 @@ services:
       - ./api/storage:/var/www/html/storage
       - ./.secrets/oauth-private.key:/var/www/html/storage/oauth-private.key
       - ./.secrets/oauth-public.key:/var/www/html/storage/oauth-public.key
-      - sms_server_jobs:/var/www/html/storage/app/sms-jobs
+      - ./sms_server_jobs:/var/www/html/storage/app/sms-jobs
 
   admin_frontend:
     build:
@@ -114,10 +114,10 @@ services:
       context: sms-server
       dockerfile: Dockerfile.prod
     volumes:
-      - sms_server_jobs:/home/app/jobs
+      - ./sms_server_jobs:/home/app/jobs
     restart: always
     devices:
-      - /dev/ttyUSB0
+      - /dev/ttyS5
     tty: true
 
 networks:

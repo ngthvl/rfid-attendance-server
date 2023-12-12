@@ -97,18 +97,15 @@ class smsServer:
         command += terminator
         self.SERIAL_BUS.write(command)
         print(command)
-        return self.SERIAL_BUS.read(1)
+        return self.SERIAL_BUS.readall()
 
     def initialize_modem(self):
-        # print(self.send_at_command('+++', b''))
-        # print(self.send_at_command('a',b''))
         at_ver = self.send_at_command('AT+VER?')
         if at_ver == b'':
             print(self.send_at_command('+++', b''))
             print(self.send_at_command('a',b''))
             print(self.send_at_command('AT+VER?'))
         print(self.send_at_command('AT+WKMOD="SMS"'))
-        pass
 
     def initialize_serial_bus(self):
         print(self.SERIAL_PORT)
