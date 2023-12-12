@@ -91,7 +91,7 @@ services:
         ipv4_address: 192.168.10.10
     user: 'www-data:www-data'
     volumes:
-      - ./api/storage:/var/www/html/storage
+      - ./api/storage/app:/var/www/html/storage/app
       - ./.secrets/oauth-private.key:/var/www/html/storage/oauth-private.key
       - ./.secrets/oauth-public.key:/var/www/html/storage/oauth-public.key
       - ./sms_server_jobs:/var/www/html/storage/app/sms-jobs
