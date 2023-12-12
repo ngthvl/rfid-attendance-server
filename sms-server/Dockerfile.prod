@@ -14,9 +14,9 @@ COPY . .
 COPY .env.prod .env
 
 RUN adduser -D -g '' appuser
-RUN usermod -a -G tty
-RUN usermod -a -G www-data
-RUN usermod -a -G dialout
+RUN addgroup -g tty -S appuser
+RUN addgroup -g www-data -S appuser
+RUN addgroup -g dialout -S appuser
 
 USER appuser
 
