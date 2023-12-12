@@ -91,9 +91,9 @@ class smsServer:
         #
         # return 'ERROR'
 
-    def send_at_command(self, command):
-        command += b'\x0d\x0a'
-        print(command.hex())
+    def send_at_command(self, command, terminator=b'\x0d\x0a'):
+        command += terminator
+        print(command)
         self.SERIAL_BUS.write(command)
         return self.SERIAL_BUS.readall()
 
@@ -102,8 +102,8 @@ class smsServer:
         # print(self.send_at_command(b'a'))
         at_ver = self.send_at_command(b'AT+VER?')
         if at_ver == b'':
-            print(self.send_at_command(b'+++'))
-            print(self.send_at_command(b'a'))
+            print(self.send_at_command(b'+++', b''))
+            print(self.send_at_command(b'a',b''))
             print(self.send_at_command(b'AT+VER?'))
 
         print(self.send_at_command(b'AT+E?'))
