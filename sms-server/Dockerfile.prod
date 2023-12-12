@@ -13,7 +13,7 @@ COPY . .
 
 COPY .env.prod .env
 
-RUN adduser appuser
+RUN adduser -D -g '' appuser
 RUN usermod -a -G tty
 RUN usermod -a -G www-data
 RUN usermod -a -G dialout
