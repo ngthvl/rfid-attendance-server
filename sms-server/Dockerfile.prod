@@ -13,7 +13,7 @@ COPY . .
 
 COPY .env.prod .env
 
-RUN adduser appuser
+RUN adduser -D appuser
 RUN addgroup tty appuser
 RUN addgroup www-data appuser
 RUN addgroup dialout appuser
