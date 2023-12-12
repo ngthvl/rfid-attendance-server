@@ -84,6 +84,7 @@ class smsServer:
         command = 'AT+SMSEND="{}",3,"{}"'.format(params['PHONE_NUMBER'], params['MESSAGE'])
         # command = bytes(command, 'ascii')
         response = self.send_at_command(command)
+        print(response)
         # result = re.search('\r\n\r\n(.*)\r\n', response.decode('ascii'))
         # if result is not None:
         #     return str(result.group(1))
@@ -95,18 +96,18 @@ class smsServer:
         self.SERIAL_BUS.reset_output_buffer()
         self.SERIAL_BUS.reset_input_buffer()
         command += terminator
-        print(command.hex())
         self.SERIAL_BUS.write(command)
+        print(command)
         return self.SERIAL_BUS.readall()
 
     def initialize_modem(self):
-        print(self.send_at_command('+++', b''))
-        print(self.send_at_command('a',b''))
-        print(self.send_at_command('AT+VER?'))
-        # if at_ver == b'':
-        #     print(self.send_at_command('+++', b''))
-        #     print(self.send_at_command('a',b''))
-        #     print(self.send_at_command('AT+VER?'))
+        # print(self.send_at_command('+++', b''))
+        # print(self.send_at_command('a',b''))
+        at_ver = self.send_at_command('AT+VER?')
+        if at_ver == b'':
+            print(self.send_at_command('+++', b''))
+            print(self.send_at_command('a',b''))
+            print(self.send_at_command('AT+VER?'))
         print(self.send_at_command('AT+WKMOD="SMS"'))
         pass
 
