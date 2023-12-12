@@ -98,7 +98,7 @@ class smsServer:
         command += terminator
         self.SERIAL_BUS.write(command)
         print(command)
-        return self.SERIAL_BUS.readall()
+        return self.SERIAL_BUS.read(1)
 
     def initialize_modem(self):
         # print(self.send_at_command('+++', b''))
