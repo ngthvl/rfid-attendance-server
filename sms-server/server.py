@@ -92,6 +92,8 @@ class smsServer:
         # return 'ERROR'
 
     def send_at_command(self, command, terminator=b'\x0d\x0a'):
+        self.SERIAL_BUS.reset_output_buffer()
+        self.SERIAL_BUS.reset_input_buffer()
         command += terminator
         print(command)
         self.SERIAL_BUS.write(command)
@@ -165,8 +167,10 @@ class smsServer:
                 parity=self.SERIAL_PARITY_BITS,
                 stopbits=self.SERIAL_STOP_BITS,
                 bytesize=self.SERIAL_BYTESIZE,
-                xonxoff=True,
-                timeout=self.SERIAL_TIMEOUT
+                xonxoff=False,
+                timeout=self.SERIAL_TIMEOUT,
+                rtscts=False,
+                dsrdtr=False
             )
 
             if self.SERIAL_BUS.isOpen() == False:
