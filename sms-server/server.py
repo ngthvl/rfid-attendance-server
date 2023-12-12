@@ -62,13 +62,13 @@ class smsServer:
                         myvars[name.strip()] = var.rstrip()
                 print("file - " + repr(path))
                 data = self.send_sms(params=myvars)
-                # if data == 'OK':
-                #     webhook_url = myvars['WEBHOOK']
-                #     t = threading.Thread(target=self.send_to_webhook(url=webhook_url, data=data))
-                #     t.start()
-                # os.remove(path)
-                # else:
-                #     print("ERROR: {}", format(str(os.path.basename(path))))
+                if data == 'OK':
+                    webhook_url = myvars['WEBHOOK']
+                    t = threading.Thread(target=self.send_to_webhook(url=webhook_url, data=data))
+                    t.start()
+                    os.remove(path)
+                else:
+                    print("ERROR: {}", format(str(os.path.basename(path))))
 
                 time.sleep(10)
 
@@ -82,14 +82,13 @@ class smsServer:
 
     def send_sms(self, params):
         command = 'AT+SMSEND="{}",3,"{}"'.format(params['PHONE_NUMBER'], params['MESSAGE'])
-        # command = bytes(command, 'ascii')
         response = self.send_at_command(command)
         print(response)
-        # result = re.search('\r\n\r\n(.*)\r\n', response.decode('ascii'))
-        # if result is not None:
-        #     return str(result.group(1))
-        #
-        # return 'ERROR'
+        result = re.search('\r\n\r\n(.*)\r\n', response.decode('ascii'))
+        if result is not None:
+            return str(result.group(1))
+
+        return 'ERROR'
 
     def send_at_command(self, command, terminator=b'\x0d\x0a'):
         command = bytes(command, 'ascii')
