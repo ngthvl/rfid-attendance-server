@@ -67,7 +67,7 @@ class smsServer:
                     t = threading.Thread(target=self.send_to_webhook(url=webhook_url, data=data))
                     t.start()
                     os.remove(path)
-                    time.sleep(1)
+                    time.sleep(0.5)
                 else:
                     print("ERROR: {}", format(str(os.path.basename(path))))
 
