@@ -2,13 +2,6 @@ FROM python:alpine as builder
 
 WORKDIR /home/app
 
-RUN apt-get update && apt-get install -y \
-    software-properties-common
-RUN add-apt-repository universe
-RUN apt-get update && apt-get install -y \
-    python3.4 \
-    python3-pip
-
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
