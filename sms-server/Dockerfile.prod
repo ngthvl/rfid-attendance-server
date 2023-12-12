@@ -13,9 +13,11 @@ COPY . .
 
 COPY .env.prod .env
 
-RUN useradd -ms /bin/bash appuser
+RUN useradd appuser
 RUN usermod -a -G tty
 RUN usermod -a -G www-data
 RUN usermod -a -G dialout
+
+USER appuser
 
 CMD [ "python", "server.py" ]
