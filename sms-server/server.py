@@ -101,13 +101,13 @@ class smsServer:
         return self.SERIAL_BUS.readall()
 
     def initialize_modem(self):
-        # print(self.send_at_command(b'+++'))
-        # print(self.send_at_command(b'a'))
-        at_ver = self.send_at_command('AT+VER?')
-        if at_ver == b'':
-            print(self.send_at_command('+++', b''))
-            print(self.send_at_command('a',b''))
-            print(self.send_at_command('AT+VER?'))
+        print(self.send_at_command('+++', b''))
+        print(self.send_at_command('a',b''))
+        print(self.send_at_command('AT+VER?'))
+        # if at_ver == b'':
+        #     print(self.send_at_command('+++', b''))
+        #     print(self.send_at_command('a',b''))
+        #     print(self.send_at_command('AT+VER?'))
 
         print(self.send_at_command('AT+E?'))
         print(self.send_at_command('AT+WKMOD?'))
