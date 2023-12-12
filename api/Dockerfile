@@ -41,6 +41,8 @@ RUN php artisan storage:link --quiet --no-interaction --force
 
 COPY supervisord-dev.conf /etc/supervisor/conf.d/supervisord.conf
 
+USER www-data
+
 EXPOSE 9000
 CMD ["php-fpm"]
 #CMD ["/usr/bin/supervisord"]
