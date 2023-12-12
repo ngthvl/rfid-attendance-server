@@ -82,7 +82,7 @@ class smsServer:
 
     def send_sms(self, params):
         command = 'AT+SMSEND="{}",3,"{}"'.format(params['PHONE_NUMBER'], params['MESSAGE'])
-        command = bytes(command, 'ascii')
+        # command = bytes(command, 'ascii')
         response = self.send_at_command(command)
         # result = re.search('\r\n\r\n(.*)\r\n', response.decode('ascii'))
         print(response)
@@ -103,11 +103,11 @@ class smsServer:
     def initialize_modem(self):
         # print(self.send_at_command(b'+++'))
         # print(self.send_at_command(b'a'))
-        at_ver = self.send_at_command(b'AT+VER?')
+        at_ver = self.send_at_command('AT+VER?')
         if at_ver == b'':
-            print(self.send_at_command(b'+++', b''))
-            print(self.send_at_command(b'a',b''))
-            print(self.send_at_command(b'AT+VER?'))
+            print(self.send_at_command('+++', b''))
+            print(self.send_at_command('a',b''))
+            print(self.send_at_command('AT+VER?'))
 
         print(self.send_at_command('AT+E?'))
         print(self.send_at_command('AT+WKMOD?'))
