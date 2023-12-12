@@ -81,7 +81,7 @@ class smsServer:
             pass
 
     def send_sms(self, params):
-        command = 'AT+SMSEND="{}",3,"{}"'.format(params['PHONE_NUMBER'], params['MESSAGE'])
+        command = 'AT+SMSEND="{}",1,"{}"'.format(params['PHONE_NUMBER'], params['MESSAGE'])
         response = self.send_at_command(command)
         print(response)
         result = re.search('\r\n\r\n(.*)\r\n', response.decode('ascii'))
