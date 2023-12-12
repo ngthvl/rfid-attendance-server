@@ -13,11 +13,6 @@ COPY . .
 
 COPY .env.prod .env
 
-RUN adduser -D -g '' appuser
-RUN addgroup -g tty -S appuser
-RUN addgroup -g www-data -S appuser
-RUN addgroup -g dialout -S appuser
 
-USER appuser
 
 CMD [ "python", "server.py" ]
