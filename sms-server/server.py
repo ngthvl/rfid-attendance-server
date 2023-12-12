@@ -67,9 +67,10 @@ class smsServer:
                     t = threading.Thread(target=self.send_to_webhook(url=webhook_url, data=data))
                     t.start()
                     os.remove(path)
-                    time.sleep(1.5)
+                    time.sleep(2)
                 else:
                     print("ERROR: {}", format(str(os.path.basename(path))))
+                    time.sleep(0.5)
 
     def send_to_webhook(self, url, data):
         try:
@@ -82,7 +83,6 @@ class smsServer:
     def send_sms(self, params):
         command = 'AT+SMSEND="{}",1,"{}"'.format(params['PHONE_NUMBER'], params['MESSAGE'])
         response = self.send_at_command(command)
-        print(response)
         result = re.search('\r\n\r\n(.*)\r\n', response.decode('ascii'))
         if result is not None:
             return str(result.group(1))
@@ -95,11 +95,11 @@ class smsServer:
         self.SERIAL_BUS.reset_input_buffer()
         command += terminator
         self.SERIAL_BUS.write(command)
-        print(command)
         return self.SERIAL_BUS.readall()
 
     def initialize_modem(self):
         at_ver = self.send_at_command('AT+VER?')
+        print(at_ver)
         if at_ver == b'':
             print(self.send_at_command('+++', b''))
             print(self.send_at_command('a',b''))
