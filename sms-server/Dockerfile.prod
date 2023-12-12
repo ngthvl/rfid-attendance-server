@@ -1,4 +1,4 @@
-FROM python:3-alpine as builder
+FROM ubuntu as builder
 
 WORKDIR /home/app
 
@@ -13,6 +13,11 @@ COPY . .
 
 COPY .env.prod .env
 
+RUN adduser appuser
+RUN usermod -a -G tty
+RUN usermod -a -G www-data
+RUN usermod -a -G dialout
 
+USER appuser
 
 CMD [ "python", "server.py" ]
