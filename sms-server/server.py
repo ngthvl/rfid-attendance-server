@@ -19,7 +19,7 @@ class smsServer:
     SERIAL_PARITY_BITS = serial.PARITY_NONE
     SERIAL_STOP_BITS = serial.STOPBITS_ONE
     SERIAL_BYTESIZE = serial.EIGHTBITS
-    SERIAL_TIMEOUT = 0.1
+    SERIAL_TIMEOUT = 0.05
 
     CURRENT_REPLY = None
 
@@ -69,8 +69,6 @@ class smsServer:
                     os.remove(path)
                 else:
                     print("ERROR: {}", format(str(os.path.basename(path))))
-
-                time.sleep(10)
 
     def send_to_webhook(self, url, data):
         try:
