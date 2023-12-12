@@ -66,11 +66,11 @@ class smsServer:
                 #     webhook_url = myvars['WEBHOOK']
                 #     t = threading.Thread(target=self.send_to_webhook(url=webhook_url, data=data))
                 #     t.start()
-                os.remove(path)
+                # os.remove(path)
                 # else:
                 #     print("ERROR: {}", format(str(os.path.basename(path))))
 
-                time.sleep(4)
+                time.sleep(10)
 
     def send_to_webhook(self, url, data):
         try:
@@ -85,7 +85,6 @@ class smsServer:
         # command = bytes(command, 'ascii')
         response = self.send_at_command(command)
         # result = re.search('\r\n\r\n(.*)\r\n', response.decode('ascii'))
-        print(response)
         # if result is not None:
         #     return str(result.group(1))
         #
@@ -96,7 +95,7 @@ class smsServer:
         self.SERIAL_BUS.reset_output_buffer()
         self.SERIAL_BUS.reset_input_buffer()
         command += terminator
-        print(command)
+        print(command.hex())
         self.SERIAL_BUS.write(command)
         return self.SERIAL_BUS.readall()
 
@@ -108,53 +107,6 @@ class smsServer:
         #     print(self.send_at_command('+++', b''))
         #     print(self.send_at_command('a',b''))
         #     print(self.send_at_command('AT+VER?'))
-
-        print(self.send_at_command('AT+E?'))
-        print(self.send_at_command('AT+WKMOD?'))
-        print(self.send_at_command('AT+CALEN?'))
-        print(self.send_at_command('AT+NATEN?'))
-        print(self.send_at_command('AT+UATEN?'))
-        print(self.send_at_command('AT+CMDPW?'))
-        print(self.send_at_command('AT+CACHEN?'))
-        print(self.send_at_command('AT+STMSG?'))
-        print(self.send_at_command('AT+ICCID?'))
-        print(self.send_at_command('AT+IMEI?'))
-        print(self.send_at_command('AT+CNUM?'))
-        print(self.send_at_command('AT+UART?'))
-        print(self.send_at_command('AT+RFCEN?'))
-        print(self.send_at_command('AT+APN?'))
-        print(self.send_at_command('AT+SOCKA?'))
-        print(self.send_at_command('AT+SOCKB?'))
-        print(self.send_at_command('AT+SOCKAEN?'))
-        print(self.send_at_command('AT+SOCKASL?'))
-        print(self.send_at_command('AT+SOCKALK?'))
-        print(self.send_at_command('AT+SOCKC?'))
-        print(self.send_at_command('AT+SOCKD?'))
-        print(self.send_at_command('AT+SOCKCEN?'))
-        print(self.send_at_command('AT+SOCKDEN?'))
-        print(self.send_at_command('AT+SOCKCSL?'))
-        print(self.send_at_command('AT+SOCKDSL?'))
-        print(self.send_at_command('AT+SOCKCLK?'))
-        print(self.send_at_command('AT+SOCKDLK?'))
-        print(self.send_at_command('AT+SOCKRSTIM?'))
-        print(self.send_at_command('AT+REGEN?'))
-        print(self.send_at_command('AT+REGTP?'))
-        print(self.send_at_command('AT+REGID?'))
-        print(self.send_at_command('AT+REGDT?'))
-        print(self.send_at_command('AT+REGSND?'))
-        print(self.send_at_command('AT+CLOUDEN?'))
-        print(self.send_at_command('AT+CLOUDID?'))
-        print(self.send_at_command('AT+HEARTEN?'))
-        print(self.send_at_command('AT+HEARTDT?'))
-        print(self.send_at_command('AT+HEARTTP?'))
-        print(self.send_at_command('AT+HEARTTM?'))
-        print(self.send_at_command('AT+HTPTP?'))
-        print(self.send_at_command('AT+HTPURL?'))
-        print(self.send_at_command('AT+HTPSV?'))
-        print(self.send_at_command('AT+HTPHD?'))
-        print(self.send_at_command('AT+HTPTIM?'))
-        print(self.send_at_command('AT+DSTNUM?'))
-
         print(self.send_at_command('AT+WKMOD="SMS"'))
         pass
 
