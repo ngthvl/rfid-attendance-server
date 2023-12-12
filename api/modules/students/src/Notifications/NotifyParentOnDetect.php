@@ -13,11 +13,14 @@ class NotifyParentOnDetect extends Notification implements UsesSmsGateway
 {
     use Queueable;
 
+    protected RfidOutput $detection;
+
     /**
      * Create a new notification instance.
      */
     public function __construct(RfidOutput $detection)
     {
+        $this->detection = $detection;
     }
 
     /**
@@ -32,11 +35,11 @@ class NotifyParentOnDetect extends Notification implements UsesSmsGateway
 
     public function toSmsGateway($notifiable): string
     {
-        return "hello";
+        return "Hi there!, your student: " . $notifiable->first_name . ' ' . $notifiable->last_name . ' was detected at school at: ' . $this->detection->detection_dt;
     }
 
     public function getPhoneNumber($notifiable): string
     {
-        return "639457201016";
+        return $notifiable->contact_number;
     }
 }
