@@ -101,7 +101,7 @@ class smsServer:
             self.initialize_modem()
 
     def send_at_command(self, command, terminator=b'\x0d\x0a'):
-        self.check_last_time_access()
+        # self.check_last_time_access()
         command = bytes(command, 'ascii')
         self.SERIAL_BUS.reset_output_buffer()
         self.SERIAL_BUS.reset_input_buffer()
