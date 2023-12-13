@@ -116,6 +116,8 @@ services:
     volumes:
       - sms_server_jobs:/home/app/jobs
     restart: always
+    networks:
+      - server-backend-network
     devices:
       - /dev/ttyS5
     tty: true

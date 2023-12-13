@@ -21,6 +21,8 @@ class smsServer:
     SERIAL_BYTESIZE = serial.EIGHTBITS
     SERIAL_TIMEOUT = 0.1
 
+    MODEM_SLEEP_TIME = 900
+
     CURRENT_REPLY = None
 
     TIMEOUT_CONCLUDE_UNRESPONSIVE = 20  # IN SECS
@@ -34,6 +36,8 @@ class smsServer:
     RESTARTER_BUS = None
     RESTARTER_PORT = None
     RESTARTER_BAUDRATE = 9600
+
+    _LAST_ACCESS_TIME = 0
 
     SMS_MODE = 0
 
@@ -89,22 +93,31 @@ class smsServer:
 
         return 'ERROR'
 
+    def check_last_time_access(self):
+        current = time.time()
+        elapse = current - self._LAST_ACCESS_TIME
+
+        if elapse > self.MODEM_SLEEP_TIME:
+            self.initialize_modem()
+
     def send_at_command(self, command, terminator=b'\x0d\x0a'):
         command = bytes(command, 'ascii')
         self.SERIAL_BUS.reset_output_buffer()
         self.SERIAL_BUS.reset_input_buffer()
         command += terminator
         self.SERIAL_BUS.write(command)
+        self._LAST_ACCESS_TIME = int(time.time())
         return self.SERIAL_BUS.readall()
 
     def initialize_modem(self):
         at_ver = self.send_at_command('AT+VER?')
-        print(at_ver)
         if at_ver == b'':
             print(self.send_at_command('+++', b''))
             print(self.send_at_command('a',b''))
             print(self.send_at_command('AT+VER?'))
+
         print(self.send_at_command('AT+WKMOD="SMS"'))
+        print(self.send_at_command('AT+SLEEP?'))
 
     def initialize_serial_bus(self):
         print(self.SERIAL_PORT)
@@ -128,8 +141,6 @@ class smsServer:
             self.MODEM_RESPONSIVE = True
 
             print("Connected to serial device")
-
-            time.sleep(3)
 
             self.initialize_modem()
         except:
