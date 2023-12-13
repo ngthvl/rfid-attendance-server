@@ -20,7 +20,7 @@ class AttendanceController extends Controller
         $uid = $request->input('id');
         $ts = $request->input('ts', time());
 
-        $baseLine = (Carbon::now())->sub('minutes', 15);
+        $baseLine = (Carbon::now())->sub('minutes', 1);
 
         $outlast = RfidOutput::where('student_uid', $uid)->where('detection_dt', '>', $baseLine)->first();
 
