@@ -21,7 +21,7 @@ class smsServer:
     SERIAL_BYTESIZE = serial.EIGHTBITS
     SERIAL_TIMEOUT = 0.1
 
-    MODEM_SLEEP_TIME = 900
+    MODEM_SLEEP_TIME = 100
 
     CURRENT_REPLY = None
 
@@ -101,6 +101,7 @@ class smsServer:
             self.initialize_modem()
 
     def send_at_command(self, command, terminator=b'\x0d\x0a'):
+        self.check_last_time_access()
         command = bytes(command, 'ascii')
         self.SERIAL_BUS.reset_output_buffer()
         self.SERIAL_BUS.reset_input_buffer()
