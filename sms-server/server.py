@@ -98,6 +98,7 @@ class smsServer:
         elapse = current - self._LAST_ACCESS_TIME
 
         if elapse > self.MODEM_SLEEP_TIME and self._LAST_ACCESS_TIME > 0:
+            self._LAST_ACCESS_TIME = int(time.time())
             self.initialize_modem()
 
     def send_at_command(self, command, terminator=b'\x0d\x0a'):
