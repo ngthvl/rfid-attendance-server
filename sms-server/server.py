@@ -94,10 +94,10 @@ class smsServer:
         return 'ERROR'
 
     def check_last_time_access(self):
-        current = time.time()
+        current = int(time.time())
         elapse = current - self._LAST_ACCESS_TIME
 
-        if elapse > self.MODEM_SLEEP_TIME:
+        if elapse < self.MODEM_SLEEP_TIME:
             self.initialize_modem()
 
     def send_at_command(self, command, terminator=b'\x0d\x0a'):
