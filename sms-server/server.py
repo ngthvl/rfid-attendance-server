@@ -73,7 +73,6 @@ class smsServer:
                     os.remove(path)
                     time.sleep(2)
                 else:
-                    print("ERROR: {}", format(str(os.path.basename(path))))
                     time.sleep(0.5)
 
     def send_to_webhook(self, url, data):
@@ -87,6 +86,7 @@ class smsServer:
     def send_sms(self, params):
         command = 'AT+SMSEND="{}",1,"{}"'.format(params['PHONE_NUMBER'], params['MESSAGE'])
         response = self.send_at_command(command)
+        print(response)
         result = re.search('\r\n\r\n(.*)\r\n', response.decode('ascii'))
         if result is not None:
             return str(result.group(1))
