@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {storage} from "~/helpers/storage";
+import {asset} from "~/helpers/storage";
 import {Student} from "~/models/student";
 
 interface hardwareParams {
@@ -124,10 +124,10 @@ defineExpose({
           <v-col class="front-id">
             <p id="name">{{ student?.first_name }} {{ student?.last_name }}</p>
             <p id="student-id">{{ student?.student_id }}</p>
-            <v-img :src="storage('/assets/id_card/front.png')" alt=""/>
+            <v-img :src="storage('/id_card/front.png')" alt=""/>
           </v-col>
           <v-col>
-            <v-img :src="storage('/assets/id_card/back.png')" alt=""/>
+            <v-img :src="storage('/id_card/back.png')" alt=""/>
           </v-col>
         </v-row>
       </v-card-item>

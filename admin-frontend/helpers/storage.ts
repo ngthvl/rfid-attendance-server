@@ -1,5 +1,5 @@
-export const storage = (path: string)=>{
+export const asset = (path: string)=>{
   const config = useRuntimeConfig();
 
-  return `${config.public.storageBase}${path}`
+  return `${config.public.assetBase}/assets${path}`
 }
