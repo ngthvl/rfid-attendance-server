@@ -22,7 +22,7 @@ class AttendanceController extends Controller
 
         $baseLine = (Carbon::now())->sub('minutes', 1);
 
-        $outlast = RfidOutput::where('student_uid', $uid)->where('detection_dt', '>', $baseLine)->first();
+        $outlast = RfidOutput::where('student_uid', $uid)->where('detection_dt', '>=', $baseLine)->first();
 
         if($outlast){
             return $this->respondWithError('ALREADY_DETECTED', 422, 'Was detected 15 mins before');

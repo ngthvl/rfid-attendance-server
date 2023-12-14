@@ -21,7 +21,7 @@ class SmsGatewayNotificationChannel
         $config['PHONE_NUMBER'] = $contact;
         $config['MESSAGE'] = $message;
 
-        $this->writeConfig($config);
+        $this->writeConfig($config, $notification->uniqueID());
         $this->writeToDb($config);
     }
 
@@ -35,14 +35,14 @@ class SmsGatewayNotificationChannel
         $message->save();
     }
 
-    protected function writeConfig(array $config)
+    protected function writeConfig(array $config, $filename=null)
     {
+        if(!$filename) $filename = strtolower(Str::random(6));
+
         $configTxt = "";
         foreach ($config as $idx => $conf) {
             $configTxt .= $idx . '=' . $conf . PHP_EOL;
         }
-
-        $filename = strtolower(Str::random(6));
 
         Storage::put('sms-jobs/' . $filename, $configTxt);
     }

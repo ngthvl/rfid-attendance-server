@@ -8,4 +8,5 @@ interface UsesSmsGateway
 {
     public function toSmsGateway($notifiable): string;
     public function getPhoneNumber($notifiable): string;
+    public function uniqueID(): string;
 }
