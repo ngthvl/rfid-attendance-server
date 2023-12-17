@@ -4,7 +4,7 @@ namespace Tamani\RfidTerminal\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAuthRequest extends FormRequest
+class RefreshTokenRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -15,7 +15,7 @@ class StoreAuthRequest extends FormRequest
     {
         return [
             'device-id' => 'required|uuid',
-            'device-name' => 'required|string',
+            'password' => 'required|string',
         ];
     }
 }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('ip_address')->nullable();
             $table->boolean('authenticated')->default(false);
             $table->json('devices_status')->nullable();
+            $table->string('secret')->nullable();
             $table->timestamps();
         });
     }

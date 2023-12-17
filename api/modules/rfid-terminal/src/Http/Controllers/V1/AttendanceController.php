@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Tamani\RfidTerminal\Enums\AllocationTypes;
 use Tamani\RfidTerminal\Models\RfidOutput;
 use Tamani\RfidTerminal\Models\RfidTagAllocation;
 use Tamani\Students\Models\Student;
@@ -34,12 +35,15 @@ class AttendanceController extends Controller
             $td = Carbon::createFromTimestamp($ts);
 
             $out = new RfidOutput();
-            $out->student_uid = $uid;
+            $out->detected_uid = $uid;
             $out->detection_dt = $td;
 
             $out->save();
 
-            $allocation->allocation->notify(new NotifyParentOnDetect($out));
+            $notif = AllocationTypes::TYPES[$allocation->allocation_type]['notification'];
+            if($notif){
+                $allocation->allocation->notify(new $notif($out));
+            }
 
             return $allocation->allocation;
         }

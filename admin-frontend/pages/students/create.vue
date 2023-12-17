@@ -3,7 +3,7 @@
 import jwtMiddleware from "../../middleware/jwtMiddleware";
 import {Student, useStudentsStore} from "~/models/student";
 
-const studentData: Ref = ref({
+const studentData: Ref<Student> = ref({
   student_id: '',
   first_name: '',
   last_name: '',
@@ -19,8 +19,9 @@ definePageMeta({
   layout: 'admin',
 })
 
-const saveStudent = () => {
-  studentStore.save(studentData.value)
+const saveStudent = async () => {
+  const tgt = Object.assign({}, studentData.value)
+  studentStore.save(tgt)
 }
 
 </script>
@@ -40,7 +41,7 @@ const saveStudent = () => {
             <v-text-field type="text" label="Last Name" v-model="studentData.last_name" :error-messages="clientErrors.errors?.last_name"></v-text-field>
           </v-col>
           <v-col cols="4">
-            <v-text-field type="text" label="School ID" v-model="studentData.student_id" :error-messages="clientErrors.errors?.student_id"></v-text-field>
+            <v-text-field type="text" label="LRN" v-model="studentData.student_id" :error-messages="clientErrors.errors?.student_id"></v-text-field>
           </v-col>
           <v-col cols="4">
             <v-select label="Level"></v-select>

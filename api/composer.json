@@ -34,7 +34,8 @@
             "Tamani\\RfidTerminal\\": "modules/rfid-terminal/src/",
             "Tamani\\Admin\\": "modules/admin/src/",
             "Tamani\\Students\\": "modules/students/src",
-            "Tamani\\Sms\\": "modules/sms-service/src"
+            "Tamani\\Sms\\": "modules/sms-service/src",
+            "Tamani\\Curriculum\\": "modules/curriculum/src"
         }
     },
     "autoload-dev": {

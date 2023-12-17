@@ -8,12 +8,15 @@ const terminalStore = useRfidTerminalStore();
 
 const { terminals } = storeToRefs(terminalStore);
 
-terminalStore.listTerminals();
+onMounted(()=>{
+  console.log("hello")
+  terminalStore.listTerminals();
+});
 
 definePageMeta({
   middleware: jwtMiddleware,
   layout: 'admin',
-})
+});
 
 </script>
 
@@ -24,11 +27,12 @@ definePageMeta({
 
       <v-card-item>
         <v-row>
-          <v-col cols="4" v-for="terminal in terminals">
+          <v-col cols="4" v-for="(terminal, key) in terminals" :key="key">
             <v-card class="shadow">
               <v-card-item>
                 <v-icon icon="mdi-access-point"></v-icon>
                 <h5>Device UID: {{ terminal.id }}</h5>
+                <h5>Device Name: {{ terminal.device_name }}</h5>
                 <h6 class="mt-3">IP: {{ terminal.ip_address }}</h6>
               </v-card-item>
               <v-card-item class="my-3">

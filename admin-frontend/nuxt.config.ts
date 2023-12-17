@@ -7,12 +7,20 @@ const pubkeyPath = path.join(__dirname, '.secrets/oauth-public.key');
 const pubKeyContent = fs.readFileSync(pubkeyPath, {encoding: "utf8"});
 
 export default defineNuxtConfig({
-  devtools: { enabled: true },
+  ssr: false,
+  devtools: {
+    enabled: true,
+
+    timeline: {
+      enabled: true
+    }
+  },
   runtimeConfig: {
     public: {
       rsaPubKey: pubKeyContent,
       apiBase: 'http://api.student-attendance.internal/api/v1',
       storageBase: 'http://api.student-attendance.internal/storage',
+      assetBase: 'http://api.student-attendance.internal/assets',
       appOwner: 'CODELINES',
       appNameSub: 'Student Attendance System'
     }

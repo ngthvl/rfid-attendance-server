@@ -5,8 +5,10 @@ namespace Tamani\RfidTerminal\Http\Controllers\Admin;
 
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Spatie\QueryBuilder\QueryBuilder;
 use Tamani\RfidTerminal\Http\Resources\TerminalResource;
 use Tamani\RfidTerminal\Models\RfidTerminal;
@@ -38,8 +40,15 @@ class RfidTerminalController extends Controller
 
         $token = $terminal->createToken('device_personal')->accessToken;
 
+        $secretPlain = Str::random(64);
+        $secret = Hash::make($secretPlain);
+
+        $terminal->secret = $secret;
+        $terminal->save();
+
         $response = $this->respondWithTokenAndMeta($token, $terminal, [
-            'attendance_endpoint' => url('/api/v1/terminal/attendance')
+            'attendance_endpoint' => url('/api/v1/terminal/attendance'),
+            'secret' => $secretPlain
         ]);
 
         try {

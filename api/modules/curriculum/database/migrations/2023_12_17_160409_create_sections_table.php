@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rfid_outputs', function (Blueprint $table) {
+        Schema::create('sections', function (Blueprint $table) {
             $table->id();
-            $table->string('detected_uid');
-            $table->dateTime('detection_dt');
+            $table->bigInteger('education_level_id')->index();
+            $table->string('section_name');
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rfid_outputs');
+        Schema::dropIfExists('sections');
     }
 };

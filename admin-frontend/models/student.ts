@@ -12,7 +12,7 @@ export interface Student {
   contact_address: string
   id?: string
   created_at?: string,
-  rfid_tag: null | {
+  rfid_tag?: null | {
     id: string,
     tag_data: string
   }

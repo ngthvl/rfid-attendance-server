@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Passport\Passport;
+use Tamani\RfidTerminal\Http\Requests\RefreshTokenRequest;
 use Tamani\RfidTerminal\Http\Requests\StoreAuthRequest;
 use Tamani\RfidTerminal\Models\RfidTerminal;
 
@@ -15,6 +16,7 @@ class AuthController extends Controller
     public function store(StoreAuthRequest $request): \Illuminate\Http\JsonResponse
     {
         $deviceId = $request->input('device-id');
+        $deviceName = $request->input('device-name');
         $deviceIp = $request->server->get('REMOTE_ADDR');
 
         $user = RfidTerminal::where('ip_address', $deviceIp)->first();
@@ -23,7 +25,7 @@ class AuthController extends Controller
             $user->delete();
             RfidTerminal::create([
                 'id' => $deviceId,
-                'device_name' => 'TERM-' . Str::random(3),
+                'device_name' => $deviceName,
                 'ip_address' => $deviceIp,
                 'devices_status' => []
             ]);
@@ -41,13 +43,31 @@ class AuthController extends Controller
         return $this->respondWithEmptyData();
     }
 
-    public function refresh()
+    public function refresh(RefreshTokenRequest $request)
     {
+        $deviceIp = $request->server->get('REMOTE_ADDR');
+        $deviceId = $request->input('device-id');
+        $password = $request->input('password');
+
         /** @var RfidTerminal $user */
-        $user = auth()->user();
+        $user = RfidTerminal::where('id', $deviceId)
+            ->where('ip_address', $deviceIp)->first();
 
-        $token = $user->createToken('rfid_terminal_access_client')->accessToken;
+        if($user && Hash::check($password, $user->secret)){
+            $secretPlain = Str::random(64);
+            $secret = Hash::make($secretPlain);
 
-        return $this->respondWithToken($token, $user);
+            $user->secret = $secret;
+            $user->save();
+
+            $token = $user->createToken('rfid_terminal_access_client')->accessToken;
+
+            return $this->respondWithTokenAndMeta($token, $user, [
+                'attendance_endpoint' => url('/api/v1/terminal/attendance'),
+                'secret' => $secretPlain
+            ]);
+        }
+
+        return $this->respondWithError('INVALID_CREDENTIALS', 401, 'Invalid credentials');
     }
 }

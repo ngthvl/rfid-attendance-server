@@ -29,7 +29,7 @@ class StudentAccountController extends Controller
     public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
         $pageLen = Request::input('per_page', 10);
-        
+
         $qb = QueryBuilder::for(Student::class)->paginate($pageLen);
 
         return StudentResource::collection($qb);
@@ -56,7 +56,7 @@ class StudentAccountController extends Controller
      */
     public function store(CreateStudentRequest $request): StudentResource
     {
-        $data = $request->validated(Student::FILLABLE);
+        $data = $request->only(Student::FILLABLE);
 
         $student = new Student($data);
 

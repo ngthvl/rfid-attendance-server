@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import {asset} from "~/helpers/storage";
-import {Student} from "~/models/student";
+import {Student, useStudentsStore} from "~/models/student";
 
 interface hardwareParams {
   has_tag: boolean
@@ -14,6 +14,8 @@ interface hardwareParams {
 const student: Ref<Student | null> = ref(null)
 
 const config = useRuntimeConfig();
+
+const studentStore = useStudentsStore();
 
 const hardwareParameters: Ref<hardwareParams> = ref({
   has_tag: false,
@@ -88,6 +90,8 @@ const assignCurrentTag = async () => {
   })
 
   tagAssigned.value = hardwareParameters.value.data as string | undefined;
+
+  studentStore.listStudents();
 }
 
 const show = (st: Student) => {
@@ -124,10 +128,10 @@ defineExpose({
           <v-col class="front-id">
             <p id="name">{{ student?.first_name }} {{ student?.last_name }}</p>
             <p id="student-id">{{ student?.student_id }}</p>
-            <v-img :src="storage('/id_card/front.png')" alt=""/>
+            <v-img :src="asset('/id_card/front.png')" alt=""/>
           </v-col>
           <v-col>
-            <v-img :src="storage('/id_card/back.png')" alt=""/>
+            <v-img :src="asset('/id_card/back.png')" alt=""/>
           </v-col>
         </v-row>
       </v-card-item>
