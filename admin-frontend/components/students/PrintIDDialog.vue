@@ -122,7 +122,7 @@ defineExpose({
       <v-card-item>
         <v-alert color="warning" v-if="hardwareParameters.device_connected === false && hardwareParameters.server_exists">Warning: Please check RFID Writer Connection or try reconnecting the device.</v-alert>
         <v-alert color="warning" v-if="hardwareParameters.server_exists === false">
-          Please Start Companion app by <a href="codelines-rfid://companion-app.open">clicking this link</a>, or download by clicking this link.
+          Please Start Companion app by <a href="codelines-rfid://companion-app.open">clicking this link</a>, or download by <a :href="asset("/binary/rfid-writer.exe")">clicking this link.</a>
         </v-alert>
         <v-row class="my-4">
           <v-col class="front-id">
