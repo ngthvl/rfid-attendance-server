@@ -23,6 +23,8 @@ class RfidTagDetectionResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return $this->resource->only(array_merge(RfidOutput::FILLABLE, []));
+        return $this->resource->only(array_merge(RfidOutput::FILLABLE, [
+            'allocated', 'terminal'
+        ]));
     }
 }

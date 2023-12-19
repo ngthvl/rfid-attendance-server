@@ -29,4 +29,9 @@ class RfidTagAllocation extends Model
     {
         return $this->morphTo('allocation');
     }
+
+    public function detections()
+    {
+        return $this->hasMany(RfidOutput::class, 'detected_uid', 'tag_data');
+    }
 }

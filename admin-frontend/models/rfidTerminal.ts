@@ -5,6 +5,7 @@ import {ResponseMeta, ResponseMetaDefaults} from "~/types/meta";
 
 export interface RfidTerminalType {
   id: string
+  terminal_id: string
   device_name: string
   ip_address: string
   devices_status: unknown

@@ -6,6 +6,7 @@ use App\Support\UUIDModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Tamani\RfidTerminal\Traits\HasAttendance;
 use Tamani\RfidTerminal\Traits\HasTagAllocation;
 use Tamani\Students\Factories\StudentFactory;
 
@@ -15,6 +16,7 @@ class Student extends Model
     use UUIDModel;
     use Notifiable;
     use HasTagAllocation;
+//    use HasAttendance;
 
     const FILLABLE = [
         'student_id',

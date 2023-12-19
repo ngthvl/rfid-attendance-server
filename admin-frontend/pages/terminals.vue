@@ -31,7 +31,7 @@ definePageMeta({
             <v-card class="shadow">
               <v-card-item>
                 <v-icon icon="mdi-access-point"></v-icon>
-                <h5>Device UID: {{ terminal.id }}</h5>
+                <h5>Device UID: {{ terminal.terminal_id }}</h5>
                 <h5>Device Name: {{ terminal.device_name }}</h5>
                 <h6 class="mt-3">IP: {{ terminal.ip_address }}</h6>
               </v-card-item>

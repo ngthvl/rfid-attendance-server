@@ -12,7 +12,7 @@ class RfidTagDetectionController
 {
     public function index()
     {
-        $qb = QueryBuilder::for(RfidOutput::class)->paginate(20);
+        $qb = QueryBuilder::for(RfidOutput::class)->with('allocation')->paginate(20);
 
         return RfidTagDetectionResource::collection($qb);
     }

@@ -21,9 +21,9 @@ class AttendanceController extends Controller
         $uid = $request->input('id');
         $ts = $request->input('ts', time());
 
-        $baseLine = (Carbon::now())->sub('minutes', 1);
+        $baseLine = (Carbon::now())->sub('seconds', 1);
 
-        $outlast = RfidOutput::where('student_uid', $uid)->where('detection_dt', '>=', $baseLine)->first();
+        $outlast = RfidOutput::where('detected_uid', $uid)->where('detection_dt', '>=', $baseLine)->first();
 
         if($outlast){
             return $this->respondWithError('ALREADY_DETECTED', 422, 'Was detected 15 mins before');
@@ -38,6 +38,8 @@ class AttendanceController extends Controller
             $out->detected_uid = $uid;
             $out->detection_dt = $td;
 
+            $out->terminal()->associate(auth()->user());
+
             $out->save();
 
             $notif = AllocationTypes::TYPES[$allocation->allocation_type]['notification'];
@@ -48,6 +50,6 @@ class AttendanceController extends Controller
             return $allocation->allocation;
         }
 
-        return $this->respondWithEmptyData();
+        return $this->respondWithError('INVALID_ENTRY', 422, 'Unknown Tag');
     }
 }

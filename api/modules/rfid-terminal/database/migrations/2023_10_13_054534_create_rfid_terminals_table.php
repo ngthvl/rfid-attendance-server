@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('rfid_terminals', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
+            $table->uuid('terminal_id')->unique()->index();
             $table->string('device_name')->nullable();
             $table->string('ip_address')->nullable();
             $table->boolean('authenticated')->default(false);

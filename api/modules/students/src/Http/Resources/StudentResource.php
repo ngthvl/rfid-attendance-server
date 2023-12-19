@@ -27,7 +27,7 @@ class StudentResource extends JsonResource
             'contact_number' => $this->contact_number,
             'contact_address' => $this->contact_address,
             'created_at' => $this->created_at,
-            'rfid_tag' => $this->activeRfidTag()
+            'rfid_tag' => $this->activeRfidTag(),
         ];
     }
 }

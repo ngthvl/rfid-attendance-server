@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('detected_uid');
             $table->dateTime('detection_dt');
+            $table->bigInteger('terminal_id')->index();
             $table->timestamps();
         });
     }

@@ -10,14 +10,14 @@ use Tamani\RfidTerminal\Factories\RfidTerminalFactory;
 
 class RfidTerminal extends BaseUser implements Authenticatable
 {
-    use HasApiTokens, HasFactory, UUIDModel;
+    use HasApiTokens, HasFactory;
 
     protected $casts = [
         'devices_status' => 'array'
     ];
 
     const FILLABLE = [
-        'id',
+        'terminal_id',
         'device_name',
         'ip_address',
         'devices_status',

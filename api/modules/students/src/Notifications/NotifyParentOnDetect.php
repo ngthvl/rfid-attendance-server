@@ -45,6 +45,6 @@ class NotifyParentOnDetect extends Notification implements UsesSmsGateway
 
     public function uniqueID(): string
     {
-        return $this->detection->student_uid;
+        return $this->detection->detected_uid;
     }
 }

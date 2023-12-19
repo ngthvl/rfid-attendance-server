@@ -19,4 +19,19 @@ class RfidOutput extends Model
         $this->fillable = self::FILLABLE;
         parent::__construct($attributes);
     }
+
+    public function allocation()
+    {
+        return $this->belongsTo(RfidTagAllocation::class, 'detected_uid', 'tag_data');
+    }
+
+    public function allocated()
+    {
+        return $this->allocation->allocation();
+    }
+
+    public function terminal()
+    {
+        return $this->belongsTo(RfidTerminal::class, 'terminal_id');
+    }
 }

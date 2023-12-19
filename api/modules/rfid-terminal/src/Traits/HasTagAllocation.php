@@ -4,6 +4,7 @@
 namespace Tamani\RfidTerminal\Traits;
 
 
+use Tamani\RfidTerminal\Models\RfidOutput;
 use Tamani\RfidTerminal\Models\RfidTagAllocation;
 
 trait HasTagAllocation
@@ -16,5 +17,10 @@ trait HasTagAllocation
     public function activeRfidTag()
     {
         return $this->morphMany(RfidTagAllocation::class, 'allocation')->orderBy('created_at', 'desc')->first();
+    }
+
+    public function attendance()
+    {
+        return $this->hasManyThrough(RfidOutput::class, RfidTagAllocation::class, 'allocation_id', 'detected_uid', 'id', 'tag_data');
     }
 }

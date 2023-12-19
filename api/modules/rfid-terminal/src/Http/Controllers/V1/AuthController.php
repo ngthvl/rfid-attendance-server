@@ -21,20 +21,17 @@ class AuthController extends Controller
 
         $user = RfidTerminal::where('ip_address', $deviceIp)->first();
 
-        if($user && $user->id != $deviceId){
-            $user->delete();
-            RfidTerminal::create([
-                'id' => $deviceId,
+        if($user && $user->terminal_id != $deviceId){
+            $user->update([
+                'terminal_id' => $deviceId,
                 'device_name' => $deviceName,
-                'ip_address' => $deviceIp,
-                'devices_status' => []
             ]);
         }
 
         if(!$user){
             RfidTerminal::create([
-                'id' => $deviceId,
-                'device_name' => 'TERM-' . Str::random(3),
+                'terminal_id' => $deviceId,
+                'device_name' => $deviceName,
                 'ip_address' => $deviceIp,
                 'devices_status' => []
             ]);
