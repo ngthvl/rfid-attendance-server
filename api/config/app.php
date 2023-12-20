@@ -174,6 +174,7 @@ return [
         \Tamani\Students\Providers\StudentsServiceProvider::class,
         \Tamani\Sms\Providers\SmsServiceProvider::class,
         \Tamani\Curriculum\Providers\CurriculumServiceProvider::class,
+        \Tamani\Settings\Providers\SettingsServiceProvider::class,
     ])->toArray(),
 
     /*

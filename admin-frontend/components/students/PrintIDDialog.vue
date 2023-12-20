@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
 import {asset} from "~/helpers/storage";
+import { useSettingsStore } from "~/models/settings";
 import {Student, useStudentsStore} from "~/models/student";
 
 interface hardwareParams {
@@ -10,6 +11,13 @@ interface hardwareParams {
   device_connected?: boolean
   server_exists?: boolean
 }
+
+const errors: Ref<{
+  message: string
+} | undefined> = ref()
+
+const settingsStore = useSettingsStore();
+const {settings} = storeToRefs(settingsStore);
 
 const student: Ref<Student | null> = ref(null)
 
@@ -80,6 +88,7 @@ const fetchHinfo = async () => {
 }
 
 const assignCurrentTag = async () => {
+  errors.value = undefined;
   const {data, error} = await useApi('/admin/rfid-tags/allocate', {
     method: "POST",
     body:{
@@ -89,18 +98,30 @@ const assignCurrentTag = async () => {
     }
   })
 
-  tagAssigned.value = hardwareParameters.value.data as string | undefined;
+  if(!error.value){
+    tagAssigned.value = hardwareParameters.value.data as string | undefined;
 
-  studentStore.listStudents();
+    studentStore.listStudents();
+
+    clearInterval(interval.value)
+  }else{
+    errors.value = error.value.data
+  }
 }
 
 const show = (st: Student) => {
   student.value = st;
   idPrintDialog.value = true;
+  tagAssigned.value = undefined;
+
+  if(interval.value){
+    clearInterval(interval.value)
+  }
 }
 
 const hide = () => {
   idPrintDialog.value = false;
+  clearInterval(interval.value)
 }
 
 defineExpose({
@@ -124,13 +145,18 @@ defineExpose({
         <v-alert color="warning" v-if="hardwareParameters.server_exists === false">
           Please Start Companion app by <a href="codelines-rfid://companion-app.open">clicking this link</a>, or download by <a :href="asset('/binary/rfid-writer.exe')">clicking this link.</a>
         </v-alert>
+        <v-alert color="warning" v-if="errors">{{ errors.message }}</v-alert>
         <v-row class="my-4">
           <v-col class="front-id">
             <p id="name">{{ student?.first_name }} {{ student?.last_name }}</p>
             <p id="student-id">{{ student?.student_id }}</p>
+            <div id="image-container">
+              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
+            </div>
             <v-img :src="asset('/id_card/front.png')" alt=""></v-img>
           </v-col>
-          <v-col>
+          <v-col class="back-id">
+            <p id="school-year">School Year {{ settings.curriculum_settings.school_year }}</p>
             <v-img :src="asset('/id_card/back.png')" alt=""></v-img>
           </v-col>
         </v-row>
@@ -174,6 +200,31 @@ defineExpose({
     padding-right: 24px;
     width: 100%;
     font-weight: bold;
+  }
+  #image-container{
+    position: absolute;
+    z-index: 4;
+    width: 42%;
+    top: 27.2%;
+    left: 11%;
+    overflow: hidden;
+    height: 32.5%;
+    img{
+      max-width: 100%;
+    }
+  }
+}
+
+.back-id {
+  position: relative;
+  #school-year {
+    position: absolute;
+    z-index: 1;
+    top: 24%;
+    text-align: center;
+    width: 100%;
+    font-weight: bold;
+    padding-right: 24px;
   }
 }
 </style>

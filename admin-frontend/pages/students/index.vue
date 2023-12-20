@@ -69,7 +69,7 @@ definePageMeta({
           </tr>
           </thead>
           <tbody>
-            <tr v-for="(student, key) in students">
+            <tr v-for="(student, key) in students" :key="key">
               <td><small>{{ student.student_id }}</small></td>
               <td>{{ student.last_name }}</td>
               <td>{{ student.first_name }}</td>
@@ -94,7 +94,7 @@ definePageMeta({
         </v-table>
       </v-card-item>
       <v-card-item>
-        <v-pagination :length="meta.last_page" :total-visible="10" :model-value="meta.current_page" v-model="filters.page"></v-pagination>
+        <v-pagination :length="meta.last_page" :total-visible="10" v-model="filters.page"></v-pagination>
       </v-card-item>
     </v-card>
 
