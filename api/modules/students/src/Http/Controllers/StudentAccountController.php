@@ -31,7 +31,9 @@ class StudentAccountController extends Controller
     {
         $pageLen = Request::input('per_page', 10);
 
-        $qb = QueryBuilder::for(Student::class)->paginate($pageLen);
+        $qb = QueryBuilder::for(Student::class)
+            ->allowedFilters(['section_id', 'education_level_id', 'school_year'])
+            ->paginate($pageLen);
 
         return StudentResource::collection($qb);
     }
