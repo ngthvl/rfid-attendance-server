@@ -7,6 +7,7 @@ import jwtMiddleware from "~/middleware/jwtMiddleware";
 import {useStudentAttendanceStore} from '~/models/studentAttendance';
 
 import { DetectionLog } from "~/models/detectionLog";
+import { EducationLevelType, SectionType, useCurriculumStore } from '~/models/curriculum';
 
 dayjs.extend(localeData)
 
@@ -52,9 +53,26 @@ const attendanceOnDay = (date_time: Dayjs, detections?:DetectionLog[]) => {
   }
   return attendance
 }
-const attendanceStore = useStudentAttendanceStore();
 
+const attendanceStore = useStudentAttendanceStore();
+const curriculumStore = useCurriculumStore();
+
+const { educationLevels } = storeToRefs(curriculumStore);
 const { attendance } = storeToRefs(attendanceStore);
+
+const selectedEduLevel: Ref<EducationLevelType|undefined> = ref();
+
+const selectedSection: Ref<SectionType|undefined> = ref();
+
+const currentSection: Ref<SectionType[]> = ref([]);
+
+watch(selectedEduLevel, ()=>{
+  if(selectedEduLevel.value){
+    if(selectedEduLevel.value?.sections){
+      currentSection.value = selectedEduLevel.value.sections
+    }
+  }
+})
 
 onMounted(()=>{
   attendanceStore.listAttendance()
@@ -66,6 +84,20 @@ onMounted(()=>{
   <v-container>
     <v-card class="shadow mt-4 mx-5">
       <v-card-title>RFID Terminals</v-card-title>
+
+      <v-card-item>
+        <v-row>
+          <v-col cols="2">
+            <v-select label="Level" :items="educationLevels" item-title="education_level_name" v-model="selectedEduLevel" return-object></v-select>
+          </v-col>
+          <v-col cols="2">
+            <v-select label="Section" :items="currentSection" item-title="section_name" v-model="selectedSection" return-object></v-select>
+          </v-col>
+          <v-col cols="4">
+            <v-btn color="success">Print</v-btn>
+          </v-col>
+        </v-row>
+      </v-card-item>
 
       <v-card-item>
         <v-table density="compact" :hover="true">
