@@ -5,11 +5,13 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as BaseUser;
 use Laravel\Passport\HasApiTokens;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Tamani\Admin\Factories\AdminFactory;
 
-class Admin extends BaseUser implements Authenticatable
+class Admin extends BaseUser implements Authenticatable, HasMedia
 {
-    use HasApiTokens, HasFactory;
+    use HasApiTokens, HasFactory, InteractsWithMedia;
 
     const FILLABLE = [
         'name', 'email'

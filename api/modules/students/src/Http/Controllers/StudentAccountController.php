@@ -3,6 +3,7 @@
 namespace Tamani\Students\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use GuzzleHttp\Promise\Create;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
@@ -61,6 +62,19 @@ class StudentAccountController extends Controller
         $student = new Student($data);
 
         $student->save();
+
+        return new StudentResource($student);
+    }
+
+    public function update(CreateStudentRequest $request, string $id): \Illuminate\Http\JsonResponse|StudentResource
+    {
+        $student = Student::find($id);
+
+        if (!$student) {
+            return $this->respondWithError('STUDENT_NOT_FOUND_ERROR', 404, 'Student Not Found');
+        }
+
+        $student->update($request->validated());
 
         return new StudentResource($student);
     }

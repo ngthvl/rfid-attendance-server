@@ -21,3 +21,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('v1/webhooks/sms-server-webhook/{tag}', function(Request $request, string $tag){
     \Illuminate\Support\Facades\Log::info($tag, $request->all());
 })->name('sms-server-wh');
+
+Route::middleware(['auth'])->group(function(){
+    Route::get('v1/file/upload', [\App\Http\Controllers\FileUploadController::class, 'generateUploadLink']);
+    Route::post('v1/file/upload', [\App\Http\Controllers\FileUploadController::class, 'upload'])->middleware(['signed', 'throttle'])->name('file.upload');
+});

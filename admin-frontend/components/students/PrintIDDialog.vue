@@ -1,6 +1,8 @@
 <script setup lang="ts">
 
 import {asset} from "~/helpers/storage";
+import { useFileUploadStore } from "~/models/fileUpload";
+import { usePrintableStore } from "~/models/printable";
 import { useSettingsStore } from "~/models/settings";
 import {Student, useStudentsStore} from "~/models/student";
 
@@ -17,7 +19,10 @@ const errors: Ref<{
 } | undefined> = ref()
 
 const settingsStore = useSettingsStore();
-const {settings} = storeToRefs(settingsStore);
+const studentPrintableStore = usePrintableStore();
+
+const { settings } = storeToRefs(settingsStore);
+const { printableStudents } = storeToRefs(studentPrintableStore);
 
 const student: Ref<Student | null> = ref(null)
 
@@ -50,6 +55,13 @@ const idPrintDialog: Ref<boolean> = ref(false);
 const interval = ref();
 
 const tagAssigned: Ref<string | undefined> = ref();
+
+const router = useRouter();
+
+const triggerSinglePrint = (student: Student) => {
+  printableStudents.value = [student];
+  clearInterval(interval.value);
+}
 
 watch(idPrintDialog, async (nw, old)=>{
   if(nw && !student.value?.rfid_tag){
@@ -119,9 +131,25 @@ const show = (st: Student) => {
   }
 }
 
+const uploadDialog = ref();
+
 const hide = () => {
   idPrintDialog.value = false;
   clearInterval(interval.value)
+}
+
+const uploadAvatar = () => {
+  if(interval.value){
+    clearInterval(interval.value)
+  }
+  uploadDialog.value.open()
+}
+
+const reloadImage = (url:string) => {
+  if(student.value){
+    student.value.avatar = url;
+    studentStore.update(student.value)
+  }
 }
 
 defineExpose({
@@ -131,50 +159,53 @@ defineExpose({
 </script>
 
 <template>
-  <v-dialog v-model="idPrintDialog" width="700">
-    <v-card>
-      <v-card-title class="d-flex justify-space-between">
-        <span>Print Student ID</span>
-        <span>
-          <v-chip color="primary" v-if="student?.rfid_tag">Student has existing tag.</v-chip>
-          <v-chip v-else :color="hardwareStatusColor">{{ hardwareStatusText }}</v-chip>
-        </span>
-      </v-card-title>
-      <v-card-item>
-        <v-alert color="warning" v-if="hardwareParameters.device_connected === false && hardwareParameters.server_exists">Warning: Please check RFID Writer Connection or try reconnecting the device.</v-alert>
-        <v-alert color="warning" v-if="hardwareParameters.server_exists === false">
-          Please Start Companion app by <a href="codelines-rfid://companion-app.open">clicking this link</a>, or download by <a :href="asset('/binary/rfid-writer.exe')">clicking this link.</a>
-        </v-alert>
-        <v-alert color="warning" v-if="errors">{{ errors.message }}</v-alert>
-        <v-row class="my-4">
-          <v-col class="front-id">
-            <p id="name">{{ student?.first_name }} {{ student?.last_name }}</p>
-            <p id="student-id">{{ student?.student_id }}</p>
-            <div id="image-container">
-              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
-            </div>
-            <v-img :src="asset('/id_card/front.png')" alt=""></v-img>
-          </v-col>
-          <v-col class="back-id">
-            <p id="school-year">School Year {{ settings.curriculum_settings.school_year }}</p>
-            <v-img :src="asset('/id_card/back.png')" alt=""></v-img>
-          </v-col>
-        </v-row>
-      </v-card-item>
-      <v-card-item class="mb-4">
-        <v-btn
-          v-if="hardwareParameters.has_tag || !!tagAssigned"
-          :disabled="!!tagAssigned"
-          color="success"
-          @click="assignCurrentTag"
-          class="mr-3"
-          :append-icon="!!tagAssigned ? 'mdi-check-all' : ''"
-        >{{ !!tagAssigned ? 'Tag Assigned' : 'Assign Tag' }}</v-btn>
-        <v-btn color="primary" class="mr-3">Print ID</v-btn>
-        <v-btn color="error" v-if="student?.rfid_tag">Clear Tag Assignment</v-btn>
-      </v-card-item>
-    </v-card>
-  </v-dialog>
+  <div>
+    <v-dialog v-model="idPrintDialog" width="700">
+      <v-card>
+        <v-card-title class="d-flex justify-space-between">
+          <span>Print Student ID</span>
+          <span>
+            <v-chip color="primary" v-if="student?.rfid_tag">Student has existing tag.</v-chip>
+            <v-chip v-else :color="hardwareStatusColor">{{ hardwareStatusText }}</v-chip>
+          </span>
+        </v-card-title>
+        <v-card-item>
+          <v-alert color="warning" v-if="hardwareParameters.device_connected === false && hardwareParameters.server_exists">Warning: Please check RFID Writer Connection or try reconnecting the device.</v-alert>
+          <v-alert color="warning" v-if="hardwareParameters.server_exists === false">
+            Please Start Companion app by <a href="codelines-rfid://companion-app.open">clicking this link</a>, or download by <a :href="asset('/binary/rfid-writer.exe')">clicking this link.</a>
+          </v-alert>
+          <v-alert color="warning" v-if="errors">{{ errors.message }}</v-alert>
+          <v-row class="my-4">
+            <v-col class="front-id">
+              <p id="name">{{ student?.first_name }} {{ student?.last_name }}</p>
+              <p id="student-id">{{ student?.student_id }}</p>
+              <div id="image-container" :style="`background-image: url(${student?.avatar});background-size: cover;background-position: center;`">
+              </div>
+              <v-img :src="asset('/id_card/front.png')" alt=""></v-img>
+            </v-col>
+            <v-col class="back-id">
+              <p id="school-year">School Year {{ settings.curriculum_settings.school_year }}</p>
+              <v-img :src="asset('/id_card/back.png')" alt=""></v-img>
+            </v-col>
+          </v-row>
+        </v-card-item>
+        <v-card-item class="mb-4">
+          <v-btn
+            v-if="hardwareParameters.has_tag || !!tagAssigned"
+            :disabled="!!tagAssigned"
+            color="success"
+            @click="assignCurrentTag"
+            class="mr-3"
+            :append-icon="!!tagAssigned ? 'mdi-check-all' : ''"
+          >{{ !!tagAssigned ? 'Tag Assigned' : 'Assign Tag' }}</v-btn>
+          <v-btn color="primary" class="mr-3" @click="triggerSinglePrint(student)" :to="'/printID'">Print ID</v-btn>
+          <v-btn color="error" v-if="student?.rfid_tag">Clear Tag Assignment</v-btn>
+          <v-btn @click="uploadAvatar">Upload Avatar</v-btn>
+        </v-card-item>
+      </v-card>
+    </v-dialog>
+    <ImageUploadDialog ref="uploadDialog" @upload-success="reloadImage"></ImageUploadDialog>
+  </div>
 </template>
 
 <style scoped lang="scss">
@@ -209,8 +240,9 @@ defineExpose({
     left: 11%;
     overflow: hidden;
     height: 32.5%;
+    text-align: center;
     img{
-      max-width: 100%;
+      max-height: 100%;
     }
   }
 }

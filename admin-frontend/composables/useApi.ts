@@ -15,6 +15,18 @@ export const isApiLoading = ref(false);
 
 export const clientErrors: Ref<ClientErrorType> = ref({});
 
+export const usePostFormData = (url: string, formdata: FormData) => {
+  const cookies = useCookie('accessToken')
+  return useFetch(url, {
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${cookies.value}`,
+    },
+    body: formdata,
+    method: 'POST'
+  })
+}
+
 export const useApi = (
   path: string,
   {

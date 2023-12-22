@@ -20,6 +20,7 @@ class CreateStudentRequest extends FormRequest
             'contact_person' => 'required',
             'contact_number' => 'required',
             'contact_address' => 'required',
+            'avatar' => 'nullable|url',
         ];
     }
 }

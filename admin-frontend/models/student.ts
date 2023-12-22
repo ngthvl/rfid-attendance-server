@@ -2,6 +2,7 @@ import {Ref} from "vue";
 import type { ResponseMeta } from "~/types/meta";
 import { ResponseMetaDefaults } from '~/types/meta';
 import {defineStore} from "pinia";
+import { EducationLevelType, SectionType } from "./curriculum";
 
 export interface Student {
   student_id: string
@@ -12,18 +13,23 @@ export interface Student {
   contact_address: string
   id?: string
   created_at?: string,
+  avatar?: string,
   rfid_tag?: null | {
     id: string,
     tag_data: string
   }
 }
 
+export interface SaveMultipleType {
+  data: Student[]
+  section?: SectionType
+  level?: EducationLevelType
+}
+
 interface filterType {
   search: string
   page: number
 }
-
-
 
 export const useStudentsStore = defineStore('students', () => {
   const students: Ref<Student[]> = ref([]);
@@ -61,6 +67,22 @@ export const useStudentsStore = defineStore('students', () => {
     })
   }
 
+  const saveMultiple = async (body: SaveMultipleType) => {
+    const {data, error} = await useApi('/admin/students/save-multiple', {
+      method: 'POST',
+      body: body
+    })
+  }
+
+  const update = async (student: Student) => {
+    await useApi(`/admin/students/${student.id}`, {
+      method: "PATCH",
+      body: student
+    })
+
+    listStudents()
+  }
+
   const updateFromCsv = async () => {
     await useApi('/admin/students/import', {
       method: 'POST'
@@ -93,6 +115,8 @@ export const useStudentsStore = defineStore('students', () => {
     meta,
     filters,
     save,
-    listStudents
+    update,
+    listStudents,
+    saveMultiple
   }
 })

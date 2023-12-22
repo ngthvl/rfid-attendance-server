@@ -4,20 +4,32 @@ import jwtMiddleware from "../../middleware/jwtMiddleware";
 
 import {Student as StudentType, useStudentsStore} from '~/models/student'
 import {storeToRefs} from "pinia";
+import { usePrintableStore } from "~/models/printable";
 
 const studentstore = useStudentsStore();
+const printable = usePrintableStore();
 
 const { students, filters, meta } = storeToRefs(studentstore)
+const { printableStudents } = storeToRefs(printable)
 
 studentstore.listStudents();
 
 const config = useRuntimeConfig();
 const sampleFile = `${config.public.apiBase}/admin/download-file?file=sample-documents/student-update-form.csv`
 
+const selectedStudents: Ref<StudentType[]> = ref([]);
+
 const printDialog = ref();
 
 const printId = (student: StudentType) => {
   printDialog.value.show(student)
+}
+
+const printMultiple = () => {
+  printableStudents.value = selectedStudents.value
+  const router = useRouter();
+
+  router.push('/printID');
 }
 
 definePageMeta({
@@ -35,30 +47,42 @@ definePageMeta({
         <v-text-field v-model="filters.search" class="mt-3" prepend-inner-icon="mdi-magnify" variant="outlined" label="Search"></v-text-field>
       </v-card-item>
       <v-card-item>
-        <v-btn rounded="xl" color="primary" class="mr-3">
-          Add Student
-          <v-menu activator="parent">
-            <v-list>
-              <v-list-item title="Add One" to="/students/create"></v-list-item>
-              <v-list-item title="Add By Section" to="/students/createbysection"></v-list-item>
-              <v-list-item title="Add By Level" to="/students/createbylevel"></v-list-item>
-            </v-list>
-          </v-menu>
-        </v-btn>
-        <v-btn rounded="xl" color="success" :flat="true">
-          Import/Update from CSV
-          <v-menu activator="parent">
-            <v-list>
-              <v-list-item title="Download Template" :href="sampleFile"></v-list-item>
-              <v-list-item title="Upload file"></v-list-item>
-            </v-list>
-          </v-menu>
-        </v-btn>
+        <div class="d-flex flex-row justify-space-between">
+          <div>
+            <v-btn rounded="xl" color="primary" class="mr-3">
+              Add Student
+              <v-menu activator="parent">
+                <v-list>
+                  <v-list-item title="Add One" to="/students/create"></v-list-item>
+                  <v-list-item title="Add By Section" to="/students/createbysection"></v-list-item>
+                  <v-list-item title="Add By Level" to="/students/createbylevel"></v-list-item>
+                </v-list>
+              </v-menu>
+            </v-btn>
+            <v-btn rounded="xl" color="success" :flat="true" class="mr-3">
+              Import/Update from CSV
+              <v-menu activator="parent">
+                <v-list>
+                  <v-list-item title="Download Template" :href="sampleFile"></v-list-item>
+                  <v-list-item title="Upload file"></v-list-item>
+                </v-list>
+              </v-menu>
+            </v-btn>
+            <v-btn v-if="selectedStudents.length > 0" @click="printMultiple" rounded="xl" color="info" :flat="true">Print</v-btn>
+          </div>
+          <div v-if="selectedStudents.length > 0">
+            <span>Selected: {{ selectedStudents.length }}</span>
+          </div>
+        </div>
+        
       </v-card-item>
       <v-card-item>
         <v-table :hover="true" style="font-family: monospace">
           <thead>
           <tr>
+            <th>
+              <v-checkbox></v-checkbox>
+            </th>
             <th>Student ID</th>
             <th>Family Name</th>
             <th>Given Name</th>
@@ -70,6 +94,9 @@ definePageMeta({
           </thead>
           <tbody>
             <tr v-for="(student, key) in students" :key="key">
+              <td>
+                <v-checkbox v-model="selectedStudents" :value="student"></v-checkbox>
+              </td>
               <td><small>{{ student.student_id }}</small></td>
               <td>{{ student.last_name }}</td>
               <td>{{ student.first_name }}</td>
