@@ -23,8 +23,6 @@ RUN apt-get update \
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
   && docker-php-ext-install pdo pdo_pgsql pgsql zip bcmath gd exif
 
-RUN docker-php-ext-enable imagick
-
 COPY ./api/ .
 COPY ./api/.env.development ./.env
 
@@ -33,7 +31,7 @@ COPY ./api/.env.development ./.env
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN composer update
-RUN composer install --no-dev
+RUN composer install --no-dev --with-all-dependencies
 #RUN php artisan migrate
 RUN php artisan clear
 RUN php artisan storage:link --quiet --no-interaction --force
