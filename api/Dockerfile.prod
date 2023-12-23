@@ -21,7 +21,7 @@ RUN apt-get update \
 #RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-  && docker-php-ext-install pdo pdo_pgsql pgsql zip bcmath gd exif
+  && docker-php-ext-install pdo pdo_pgsql pgsql zip bcmath gd exif imagick
 
 COPY ./api/ .
 COPY ./api/.env.development ./.env
