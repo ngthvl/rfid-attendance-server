@@ -9,6 +9,7 @@ Route::middleware(['api', 'auth:admin'])->prefix('api/v1/admin')->group(function
     Route::delete('students/import', [\Tamani\Students\Http\Controllers\StudentAccountController::class, 'undoStudentCsvImport']);
     Route::get('students/list-imports/{directory}', [\Tamani\Students\Http\Controllers\StudentAccountController::class, 'listImports']);
     Route::get('students/attendance', [\Tamani\Students\Http\Controllers\StudentAttendanceController::class, 'index']);
+    Route::post('students/save-multiple', [\Tamani\Students\Http\Controllers\StudentAccountController::class, 'saveMultiple']);
     Route::get('students/{id}', [\Tamani\Students\Http\Controllers\StudentAccountController::class, 'show']);
     Route::patch('students/{id}', [\Tamani\Students\Http\Controllers\StudentAccountController::class, 'update']);
 });

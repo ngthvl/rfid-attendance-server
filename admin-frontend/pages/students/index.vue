@@ -5,9 +5,13 @@ import jwtMiddleware from "../../middleware/jwtMiddleware";
 import {Student as StudentType, useStudentsStore} from '~/models/student'
 import {storeToRefs} from "pinia";
 import { usePrintableStore } from "~/models/printable";
+import { EducationLevelType, SectionType, useCurriculumStore } from "~/models/curriculum";
 
 const studentstore = useStudentsStore();
 const printable = usePrintableStore();
+const curriculumStore = useCurriculumStore();
+
+const { educationLevels } = storeToRefs(curriculumStore);
 
 const { students, filters, meta } = storeToRefs(studentstore)
 const { printableStudents } = storeToRefs(printable)
@@ -19,7 +23,15 @@ const sampleFile = `${config.public.apiBase}/admin/download-file?file=sample-doc
 
 const selectedStudents: Ref<StudentType[]> = ref([]);
 
+const selectedEduLevel: Ref<EducationLevelType|undefined> = ref();
+
+const selectedSection: Ref<SectionType|undefined> = ref();
+
+const currentSection: Ref<SectionType[]> = ref([]);
+
 const printDialog = ref();
+
+curriculumStore.listEducationLevels()
 
 const printId = (student: StudentType) => {
   printDialog.value.show(student)
@@ -31,6 +43,21 @@ const printMultiple = () => {
 
   router.push('/printID');
 }
+
+watch(selectedEduLevel, ()=>{
+  if(selectedEduLevel.value){
+    filters.value.level = selectedEduLevel.value.id
+    if(selectedEduLevel.value?.sections){
+      currentSection.value = selectedEduLevel.value.sections
+    }
+  }
+})
+
+watch(selectedSection, ()=>{
+  if(selectedSection.value){
+    filters.value.section = selectedSection.value.id
+  }
+})
 
 definePageMeta({
   middleware: jwtMiddleware,
@@ -44,7 +71,20 @@ definePageMeta({
     <v-card class="shadow mt-4 mx-5">
       <v-card-title>Students</v-card-title>
       <v-card-item>
-        <v-text-field v-model="filters.search" class="mt-3" prepend-inner-icon="mdi-magnify" variant="outlined" label="Search"></v-text-field>
+        <v-row>
+          <v-col cols="6">
+            <v-text-field v-model="filters.search" class="mt-3" prepend-inner-icon="mdi-magnify" variant="outlined" label="Search"></v-text-field>
+          </v-col>
+          <v-col cols="2">
+            <v-select label="Level" :items="educationLevels" item-title="education_level_name" item-value="id" v-model="selectedEduLevel" return-object></v-select>
+          </v-col>
+          <v-col cols="2">
+            <v-select label="Section" :items="currentSection" item-title="section_name" item-value="id" v-model="selectedSection" return-object></v-select>
+          </v-col>
+          <v-col cols="1">
+            <v-btn color="success">Print</v-btn>
+          </v-col>
+        </v-row>
       </v-card-item>
       <v-card-item>
         <div class="d-flex flex-row justify-space-between">

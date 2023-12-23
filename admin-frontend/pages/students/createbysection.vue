@@ -31,7 +31,7 @@ const currentSection: Ref<SectionType[]> = ref([]);
 const data: Ref<Student[]> = ref([])
 
 const addRow = () => {
-  data.value.push(defaults)
+  data.value.push(Object.assign({}, defaults))
 }
 
 const saveStudents = () => {
@@ -41,7 +41,7 @@ const saveStudents = () => {
     level: selectedEduLevel?.value
   }
 
-  studentStore.saveMultiple(requestBody);
+  studentStore.saveMultiple(Object.assign({}, requestBody));
 }
 
 curriculumStore.listEducationLevels()

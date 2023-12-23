@@ -25,6 +25,8 @@ class Student extends Model
         'contact_person',
         'contact_number',
         'contact_address',
+        'section_id',
+        'education_level_id',
         'avatar'
     ];
     /**

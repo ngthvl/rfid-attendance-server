@@ -6,7 +6,7 @@ export interface SectionType {
 
 export interface EducationLevelType {
   education_level_name: string
-  id: string
+  id: number
   created_at: string
   sections?: SectionType[]
 }

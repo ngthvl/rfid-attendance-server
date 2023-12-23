@@ -10,8 +10,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\QueryBuilder\QueryBuilder;
 use Tamani\Admin\Models\Admin;
+use Tamani\Curriculum\Models\EducationLevel;
+use Tamani\Curriculum\Models\Section;
 use Tamani\Students\Helpers\CsvHelper;
-use Tamani\Students\Http\Requests\CreateStudentRequest;
+use Tamani\Students\Http\Requests\CreateMultipleRequest;
 use Tamani\Students\Http\Requests\DeleteStudentsRequest;
 use Tamani\Students\Http\Requests\ImportStudentFromCsv;
 use Tamani\Students\Http\Requests\UndoFileImportRequest;
@@ -54,10 +56,10 @@ class StudentAccountController extends Controller
     }
 
     /**
-     * @param CreateStudentRequest $request
+     * @param CreateMultipleRequest $request
      * @return StudentResource
      */
-    public function store(CreateStudentRequest $request): StudentResource
+    public function store(CreateMultipleRequest $request): StudentResource
     {
         $data = $request->only(Student::FILLABLE);
 
@@ -68,7 +70,7 @@ class StudentAccountController extends Controller
         return new StudentResource($student);
     }
 
-    public function update(CreateStudentRequest $request, string $id): \Illuminate\Http\JsonResponse|StudentResource
+    public function update(CreateMultipleRequest $request, string $id): \Illuminate\Http\JsonResponse|StudentResource
     {
         $student = Student::find($id);
 
@@ -149,6 +151,30 @@ class StudentAccountController extends Controller
         }
 
         return response()->json($finalList);
+    }
+
+    public function saveMultiple(CreateMultipleRequest $request)
+    {
+        $students = $request->validated('data');
+        $sectionId = $request->validated('section.id');
+        $levelId = $request->validated('section.id');
+
+        $section = Section::find($sectionId);
+        $level = EducationLevel::find($levelId);
+
+        foreach ($students as $student) {
+            if ($section) {
+                $student['section_id'] = $section->id;
+                $student['education_level_id'] = $section->educationLevel->id;
+            } elseif ($level) {
+                $student['education_level_id'] = $level->id;
+            }
+
+            $savedStudent = new Student($student);
+            $savedStudent->save();
+        }
+
+        return $this->respondWithEmptyData();
     }
 
     /**

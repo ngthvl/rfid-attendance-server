@@ -21,12 +21,12 @@ class AttendanceController extends Controller
         $uid = $request->input('id');
         $ts = $request->input('ts', time());
 
-        $baseLine = (Carbon::now())->sub('seconds', 1);
+        $baseLine = (Carbon::now())->sub('seconds', env('ATTENDANCE_INTERVAL_SECS', 60));
 
-        $outlast = RfidOutput::where('detected_uid', $uid)->where('detection_dt', '>=', $baseLine)->first();
+        $outlast = RfidOutput::where('detected_uid', $uid)->where('detection_dt', '<=', $baseLine)->first();
 
         if($outlast){
-            return $this->respondWithError('ALREADY_DETECTED', 422, 'Was detected 15 mins before');
+            return $this->respondWithError('ALREADY_DETECTED', 422, 'Throttled');
         }
 
         $allocation = RfidTagAllocation::where('tag_data', $uid)->first();

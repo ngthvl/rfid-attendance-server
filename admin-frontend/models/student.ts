@@ -27,18 +27,22 @@ export interface SaveMultipleType {
 }
 
 interface filterType {
-  search: string
-  page: number
+  search?: string
+  page?: number
+  section?: number,
+  level?: number
 }
 
 export const useStudentsStore = defineStore('students', () => {
   const students: Ref<Student[]> = ref([]);
 
   const params: Ref<{
-    'filter[search]': string;
+    'filter[search]'?: string;
+    'filter[section_id]'?: number;
+    'filter[education_level_id]'?: number;
     'page': number;
   }> = ref({
-    'filter[search]': '',
+    // 'filter[search]': '',
     'page': 1,
   })
 
@@ -47,7 +51,7 @@ export const useStudentsStore = defineStore('students', () => {
 
   const listStudents = async () => {
     const {data, error} = await useApi('/admin/students', {
-      params: filters.value,
+      params: params.value,
       method: "GET"
     });
 
@@ -97,8 +101,10 @@ export const useStudentsStore = defineStore('students', () => {
   });
 
   watch(filters, (newstate: filterType)=>{
-    params.value['filter[search]'] = newstate.search;
-    params.value['page'] = newstate.page;
+    // params.value['filter[search]'] = newstate.search;
+    params.value['filter[section_id]'] = newstate.section;
+    params.value['filter[education_level_id]'] = newstate.level;
+    params.value['page'] = newstate.page ?? 1;
 
     router().push({
       path: route().path,

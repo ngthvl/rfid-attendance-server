@@ -27,7 +27,7 @@ import {isApiLoading} from "~/composables/useApi";
   </v-app-bar>
 </template>
 
-<style scoped>
+<style>
 .v-toolbar__extension{
   max-height: 10px!important;
 }

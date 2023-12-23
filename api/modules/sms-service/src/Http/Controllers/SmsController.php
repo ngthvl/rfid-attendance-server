@@ -23,4 +23,9 @@ class SmsController extends Controller
 
         return SmsResource::collection($qb);
     }
+
+    public function sendSms()
+    {
+
+    }
 }
