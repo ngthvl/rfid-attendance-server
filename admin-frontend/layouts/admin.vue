@@ -8,7 +8,7 @@ import SideBar from "~/components/SideBar.vue";
     <v-main>
       <SideBar />
       <MenuBar />
-      <NuxtPage />
+      <NuxtPage style="margin-top: 1px"/>
     </v-main>
   </v-layout>
 </template>

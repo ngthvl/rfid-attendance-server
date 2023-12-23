@@ -8,10 +8,8 @@ const terminalStore = useRfidTerminalStore();
 
 const { terminals } = storeToRefs(terminalStore);
 
-onMounted(()=>{
-  console.log("hello")
-  terminalStore.listTerminals();
-});
+
+terminalStore.listTerminals();
 
 definePageMeta({
   middleware: jwtMiddleware,
