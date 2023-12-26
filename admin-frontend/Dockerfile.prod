@@ -8,11 +8,23 @@ COPY ./admin-frontend .
 COPY ./.secrets/oauth-public.key ./.secrets/oauth-public.key
 COPY ./admin-frontend/.env.prod .env
 
-RUN npm install pm2 -g
-
 RUN npm i
 
 RUN npm run build
+
+
+from node:alpine as runner
+
+RUN mkdir -p /home/app/
+
+WORKDIR /home/app/
+
+COPY ./.secrets/oauth-public.key ./.secrets/oauth-public.key
+COPY ./admin-frontend/.env.prod .env
+
+RUN npm install pm2 -g
+
+COPY --from=builder /home/app/.output/ ./.output/
 
 EXPOSE 3000
 
