@@ -13,7 +13,7 @@ interface apiParams{
 }
 export const isApiLoading = ref(false);
 
-export const clientErrors: Ref<ClientErrorType> = ref({});
+export const clientErrors: Ref<ClientErrorType|undefined> = ref();
 
 export const usePostFormData = (url: string, formdata: FormData) => {
   const cookies = useCookie('accessToken')

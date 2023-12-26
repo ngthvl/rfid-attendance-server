@@ -31,7 +31,7 @@ definePageMeta({
           </tr>
           </thead>
           <tbody>
-          <tr v-for="(admin, key) in admins">
+          <tr v-for="(admin, key) in admins" :key="key">
             <td>{{ admin.name }}</td>
             <td>{{ admin.email }}</td>
             <td></td>

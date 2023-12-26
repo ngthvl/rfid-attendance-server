@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { SaveMultipleType, Student, useStudentsStore } from "~/models/student";
+import { SaveMultipleType, Student, studentDefaults, useStudentsStore } from "~/models/student";
 import jwtMiddleware from "../../middleware/jwtMiddleware";
 import { EducationLevelType, SectionType, useCurriculumStore } from "~/models/curriculum";
+import { StudentCreateRule } from "~/rules/StudentRules";
 
 definePageMeta({
   middleware: jwtMiddleware,
@@ -13,15 +14,6 @@ const studentStore = useStudentsStore();
 
 const { educationLevels } = storeToRefs(curriculumStore);
 
-const defaults = {
-  student_id: '',
-  first_name: '',
-  last_name: '',
-  contact_person: '',
-  contact_number: '',
-  contact_address: '',
-};
-
 const selectedEduLevel: Ref<EducationLevelType|undefined> = ref();
 
 const selectedSection: Ref<SectionType|undefined> = ref();
@@ -31,7 +23,7 @@ const currentSection: Ref<SectionType[]> = ref([]);
 const data: Ref<Student[]> = ref([])
 
 const addRow = () => {
-  data.value.push(Object.assign({}, defaults))
+  data.value.push(Object.assign({}, studentDefaults))
 }
 
 const saveStudents = () => {
@@ -44,7 +36,9 @@ const saveStudents = () => {
   studentStore.saveMultiple(Object.assign({}, requestBody));
 }
 
-curriculumStore.listEducationLevels()
+onMounted(()=>{
+  curriculumStore.listEducationLevels()
+})
 
 watch(selectedEduLevel, ()=>{
   if(selectedEduLevel.value){

@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { useFileUploadStore } from "~/models/fileUpload";
+import { useNotificationStore } from "~/models/notification";
+import Camera from "simple-vue-camera";
 
 const fileUploadStore = useFileUploadStore();
+const notificationStore = useNotificationStore();
 
 const emit = defineEmits(['upload-success'])
 
@@ -13,10 +16,10 @@ const imgSrc: Ref<string> = ref('');
 
 let fileReader: FileReader | undefined;
 
+const camera = ref<InstanceType<typeof Camera>>();
+
 const openCamera = () => {
-  if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
-    navigator.mediaDevices.getUserMedia({video: true})
-  }
+  
 }
 
 const open = () => {
@@ -45,7 +48,7 @@ const fileReaderOnChange = (e) => {
 
     fileReader.onload = ((theFile) => {
       return (e) => {
-        imgSrc.value = e.target.result ?? '';
+        imgSrc.value = e.target?.result as string ?? '';
       };
     })(file);
 
@@ -60,36 +63,69 @@ const doUpload = async (e) => {
   const url = await fileUploadStore.doUpload(formData);
 
   if(url){
-    emit('upload-success', url.url)
+    emit('upload-success', url.url);
+    notificationStore.pushNotification("Successfully Uploaded!");
   }
 }
+
+const snapshot = async () => {
+    const blob = await camera.value?.snapshot();
+
+    // To show the screenshot with an image tag, create a url
+    const url = URL.createObjectURL(blob);
+}
+
 defineExpose({
   open,
   close
 })
 </script>
 <template>    
-  <v-dialog width="300" v-model="dialog">
+  <v-dialog width="600" v-model="dialog">
     <v-card>
-      <v-card-item>
+      <v-card-item class="mb-5">
         <form @submit="doUpload">
-          <v-img :src="imgSrc"></v-img>
           <v-row>
-            <v-col>
-              <v-btn @click="openCamera" type="button" color="primary" block>
-                <h1><v-icon icon="mdi-camera"></v-icon></h1>
-              </v-btn>
+            <v-col cols="5" class="text-center">
+              <div class="d-flex">
+                <v-img :src="imgSrc"></v-img>
+
+                <camera :resolution="{ width: 375, height: 812 }" autoplay></camera>
+              </div>
+
+              <v-btn block class="mt-5" type="submit" color="success" variant="elevated" size="x-large" :loading="isApiLoading">Submit</v-btn>
             </v-col>
-            <v-col>
-              <v-btn type="button" @click="openFilePicker" color="primary" block>
-                <h1><v-icon icon="mdi-laptop"></v-icon></h1>
-              </v-btn>
+            <v-col cols="7">
+              <v-row>
+                <v-col cols="12">
+                  <v-btn class="selection-btn" @click="openCamera" type="button" variant="elevated" block>
+                    <div>
+                      <h1><v-icon icon="mdi-camera"></v-icon></h1>
+                      <p>Use Camera</p>
+                    </div>
+                  </v-btn>
+                </v-col>
+                <v-col cols="12">
+                  <v-btn class="selection-btn" type="button" @click="openFilePicker" variant="elevated" block>
+                    <div>
+                      <h1><v-icon icon="mdi-laptop"></v-icon></h1>
+                      <p>Choose from device</p>
+                    </div>
+                  </v-btn>
+                </v-col>
+              </v-row>
+              <input type="file" ref="filePickerRef" hidden @change="fileReaderOnChange" name="file">
             </v-col>
           </v-row>
-          <input type="file" ref="filePickerRef" hidden @change="fileReaderOnChange" name="file">
-          <v-btn type="submit" color="success" variant="elevated">Submit</v-btn>
         </form>
       </v-card-item>
     </v-card>
   </v-dialog>  
 </template>
+
+<style scoped>
+.selection-btn {
+  padding-top: 100px!important;
+  padding-bottom: 100px!important;
+}
+</style>

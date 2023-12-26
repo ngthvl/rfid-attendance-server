@@ -2,6 +2,7 @@
 
 import {asset} from "~/helpers/storage";
 import { useFileUploadStore } from "~/models/fileUpload";
+import { useNotificationStore } from "~/models/notification";
 import { usePrintableStore } from "~/models/printable";
 import { useSettingsStore } from "~/models/settings";
 import {Student, useStudentsStore} from "~/models/student";
@@ -20,6 +21,7 @@ const errors: Ref<{
 
 const settingsStore = useSettingsStore();
 const studentPrintableStore = usePrintableStore();
+const notificationStore = useNotificationStore();
 
 const { settings } = storeToRefs(settingsStore);
 const { printableStudents } = storeToRefs(studentPrintableStore);
@@ -58,8 +60,8 @@ const tagAssigned: Ref<string | undefined> = ref();
 
 const router = useRouter();
 
-const triggerSinglePrint = (student: Student) => {
-  printableStudents.value = [student];
+const triggerSinglePrint = (student: Student | null) => {
+  if(student) printableStudents.value = [student];
   clearInterval(interval.value);
 }
 
@@ -74,7 +76,7 @@ watch(idPrintDialog, async (nw, old)=>{
 })
 
 const fetchHinfo = async () => {
-  if (idPrintDialog.value && !student.rfid_tag) {
+  if (idPrintDialog.value && !student.value?.rfid_tag) {
     let t = null;
 
     await (async () => {
@@ -115,7 +117,9 @@ const assignCurrentTag = async () => {
 
     studentStore.listStudents();
 
-    clearInterval(interval.value)
+    notificationStore.pushNotification('Successfully Assigned!')
+
+    clearInterval(interval.value);
   }else{
     errors.value = error.value.data
   }

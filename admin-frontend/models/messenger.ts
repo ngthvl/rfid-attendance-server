@@ -10,6 +10,7 @@ export interface MessagesType {
   message: string
   type: string
   status: string
+  created_at: string
 }
 
 export const useMessengerStore = defineStore('messenger-store', ()=>{
@@ -22,7 +23,10 @@ export const useMessengerStore = defineStore('messenger-store', ()=>{
     })
 
     if(!error.value){
-      phonebook.value = data.value.data
+      const response = data.value as {
+        data: PhonebookType[]
+      }
+      phonebook.value = response.data
     }
   }
 
@@ -32,7 +36,11 @@ export const useMessengerStore = defineStore('messenger-store', ()=>{
     })
 
     if(!error.value){
-      currentMessages.value = data.value.data
+      const response = data.value as {
+        data: MessagesType[]
+      }
+      let messages = response.data
+      currentMessages.value = currentMessages.value.concat(messages.reverse())
     }
   }
   

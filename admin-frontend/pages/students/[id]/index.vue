@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import jwtMiddleware from "../../middleware/jwtMiddleware";
+import jwtMiddleware from "~/middleware/jwtMiddleware";
 import { Student, studentDefaults, useStudentsStore } from "~/models/student";
 import { EducationLevelType, SectionType, useCurriculumStore } from "~/models/curriculum";
 import { useNotificationStore } from "~/models/notification";
@@ -21,6 +21,8 @@ const currentSection: Ref<SectionType[]> = ref([]);
 
 const { errors } = storeToRefs(studentStore);
 
+const route = useRoute();
+
 definePageMeta({
   middleware: jwtMiddleware,
   layout: 'admin',
@@ -28,12 +30,10 @@ definePageMeta({
 
 const saveStudent = async () => {
   const tgt = Object.assign({}, studentData.value);
-  const {data, error} = await studentStore.save(tgt);
+  const {data, error} = await studentStore.update(tgt);
 
   if(!error.value){
     notificationStore.pushNotification("Successfully Saved")
-
-    studentData.value = studentDefaults
   }
 };
 
@@ -50,8 +50,14 @@ watch(selectedSection, ()=>{
   }
 });
 
-onMounted(() => {
+onMounted(async () => {
   curriculumStore.listEducationLevels();
+
+  const studentFetch = await studentStore.getStudentInfo(route.params['id'] as string)
+
+  if(studentFetch){
+    studentData.value = studentFetch;
+  }
 });
 
 </script>
@@ -59,7 +65,7 @@ onMounted(() => {
 <template>
   <v-container>
     <v-card class="shadow mt-4 mx-5">
-      <v-card-title>Create New Student</v-card-title>
+      <v-card-title>Edit Student</v-card-title>
       <v-card-item>
         <h4>Student Info</h4>
         <hr>
@@ -97,7 +103,7 @@ onMounted(() => {
         </v-row>
       </v-card-item>
       <v-card-item class="mb-2">
-        <v-btn rounded="xl" class="mr-5">Back</v-btn>
+        <v-btn rounded="xl" class="mr-5" to="/students">Back</v-btn>
         <v-btn rounded="xl" color="success" @click="saveStudent">Save</v-btn>
       </v-card-item>
     </v-card>

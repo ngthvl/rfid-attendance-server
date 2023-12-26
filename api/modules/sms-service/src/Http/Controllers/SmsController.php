@@ -19,7 +19,10 @@ class SmsController extends Controller
 
     public function showByPbId(string $phonebookId)
     {
-        $qb = QueryBuilder::for(SmsMessage::class)->where('phonebook_id', $phonebookId)->paginate();
+        $qb = QueryBuilder::for(SmsMessage::class)
+            ->where('phonebook_id', $phonebookId)
+            ->orderBy('created_at', 'desc')
+            ->paginate();
 
         return SmsResource::collection($qb);
     }

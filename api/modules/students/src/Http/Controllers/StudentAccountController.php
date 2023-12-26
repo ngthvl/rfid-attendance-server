@@ -3,20 +3,25 @@
 namespace Tamani\Students\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Support\Phone;
 use GuzzleHttp\Promise\Create;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Tamani\Admin\Models\Admin;
 use Tamani\Curriculum\Models\EducationLevel;
 use Tamani\Curriculum\Models\Section;
 use Tamani\Students\Helpers\CsvHelper;
 use Tamani\Students\Http\Requests\CreateMultipleRequest;
+use Tamani\Students\Http\Requests\CreateStudentRequest;
 use Tamani\Students\Http\Requests\DeleteStudentsRequest;
 use Tamani\Students\Http\Requests\ImportStudentFromCsv;
 use Tamani\Students\Http\Requests\UndoFileImportRequest;
+use Tamani\Students\Http\Resources\StudentInfoResource;
 use Tamani\Students\Http\Resources\StudentResource;
 use Tamani\Students\Models\Student;
 
@@ -34,7 +39,19 @@ class StudentAccountController extends Controller
         $pageLen = Request::input('per_page', 10);
 
         $qb = QueryBuilder::for(Student::class)
-            ->allowedFilters(['section_id', 'education_level_id', 'school_year'])
+            ->allowedFilters([
+                'section_id',
+                'education_level_id',
+                'school_year',
+                AllowedFilter::callback('search', function(Builder $query, $value){
+                    $query->orWhere('first_name', 'like', '%' . $value . '%');
+                    $query->orWhere('last_name', 'like', '%' . $value . '%');
+                    $query->orWhere('contact_number', 'like', '%' . $value . '%');
+                    $query->orWhere('contact_person', 'like', '%' . $value . '%');
+                    $query->orWhere('contact_address', 'like', '%' . $value . '%');
+                })
+            ])
+            ->orderBy('created_at', 'desc')
             ->paginate($pageLen);
 
         return StudentResource::collection($qb);
@@ -42,9 +59,9 @@ class StudentAccountController extends Controller
 
     /**
      * @param string $uuid
-     * @return \Illuminate\Http\JsonResponse|StudentResource
+     * @return StudentInfoResource|\Illuminate\Http\JsonResponse
      */
-    public function show(string $uuid): \Illuminate\Http\JsonResponse|StudentResource
+    public function show(string $uuid): StudentInfoResource|\Illuminate\Http\JsonResponse
     {
         $qb = Student::find($uuid);
 
@@ -52,16 +69,32 @@ class StudentAccountController extends Controller
             return $this->respondWithError('student_not_found_error', 404, 'Student Not Found');
         }
 
-        return new StudentResource($qb);
+        return new StudentInfoResource($qb);
     }
 
     /**
-     * @param CreateMultipleRequest $request
+     * @param CreateStudentRequest $request
      * @return StudentResource
      */
-    public function store(CreateMultipleRequest $request): StudentResource
+    public function store(CreateStudentRequest $request): StudentResource
     {
         $data = $request->only(Student::FILLABLE);
+
+        $sectionId = $request->validated('section.id');
+        $levelId = $request->validated('section.id');
+
+        $section = Section::find($sectionId);
+        $level = EducationLevel::find($levelId);
+
+        $data['contact_number'] = Phone::cleanPhoneNumber($data['contact_number']);
+
+        if($section){
+            $data['section_id'] = $section->id;
+            $data['education_level_id'] = $section->educationLevel->id;
+        }
+        elseif($level){
+            $data['education_level_id'] = $level->id;
+        }
 
         $student = new Student($data);
 
@@ -70,7 +103,7 @@ class StudentAccountController extends Controller
         return new StudentResource($student);
     }
 
-    public function update(CreateMultipleRequest $request, string $id): \Illuminate\Http\JsonResponse|StudentResource
+    public function update(CreateStudentRequest $request, string $id): \Illuminate\Http\JsonResponse|StudentResource
     {
         $student = Student::find($id);
 
@@ -191,9 +224,18 @@ class StudentAccountController extends Controller
                 $csrow = explode(',', $line);
                 $studentData = CsvHelper::mapStudentDataCsv($csrow);
 
-                $student = new Student($studentData);
-                $student->import_file = $filePath;
-                $student->save();
+                $student = Student::where('student_id', $studentData['student_id'])->first();
+
+                $studentData['contact_number'] = Phone::cleanPhoneNumber($studentData['contact_number']);
+
+                if($student){
+                    $student->update($studentData);
+                    $student->save();
+                }else{
+                    $student = new Student($studentData);
+                    $student->import_file = $filePath;
+                    $student->save();
+                }
             }
         }
     }

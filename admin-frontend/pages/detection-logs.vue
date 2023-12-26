@@ -9,7 +9,9 @@ const detectionStore = useDetectionLogStore();
 
 const { detections, filters, meta } = storeToRefs(detectionStore)
 
-detectionStore.listDetections();
+onMounted(async ()=>{
+  detectionStore.listDetections();
+})
 
 const config = useRuntimeConfig();
 

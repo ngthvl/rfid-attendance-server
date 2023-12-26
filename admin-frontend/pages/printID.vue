@@ -15,8 +15,6 @@ const { printableStudents } = storeToRefs(studentPrintableStore);
 
 const uploadDialog = ref();
 
-await settingsStore.listSettings()
-
 onMounted(()=>{
   nextTick(()=>{
     nextTick(()=>{
@@ -34,6 +32,10 @@ const reloadImage = (url:string) => {
     uploadDialog.value.close();
   }
 }
+
+onMounted(async ()=>{
+  await settingsStore.listSettings()
+})
 
 const changeAvatar = (st: Student) => {
   student.value = st;

@@ -7,6 +7,11 @@ export interface Admin {
   email: String
 }
 
+interface ResponseType {
+  data: Admin[],
+  meta: ResponseMeta
+}
+
 export const filters: Ref = ref({
   search: "",
   page: 1
@@ -22,6 +27,9 @@ export const list = async () => {
     method: "GET"
   });
 
-  admins.value = data?.value?.data;
-  meta.value = data?.meta;
+  if(!error.value){
+    const response:ResponseType = data.value as ResponseType;
+    admins.value = response.data as Admin[];
+    meta.value = response.meta;
+  }  
 }

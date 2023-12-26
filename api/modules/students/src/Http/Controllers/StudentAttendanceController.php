@@ -13,7 +13,13 @@ class StudentAttendanceController extends Controller
 {
     public function index()
     {
-        $qb = QueryBuilder::for(Student::class)->with('attendance')->get();
+        $qb = QueryBuilder::for(Student::class)
+            ->with('attendance')
+            ->allowedFilters([
+                'section_id',
+                'education_level_id',
+            ])
+            ->get();
 
         return JsonResource::collection($qb);
     }

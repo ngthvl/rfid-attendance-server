@@ -2,12 +2,15 @@
 
 import jwtMiddleware from "~/middleware/jwtMiddleware";
 import { useMessengerStore } from "~/models/messenger";
+import { transformDateTime } from '~/helpers/util';
 
 const messengerStore = useMessengerStore();
 
 const { phonebook, currentMessages } = storeToRefs(messengerStore);
 
-messengerStore.getPhonebook();
+onMounted(async ()=>{
+  messengerStore.getPhonebook();
+})
 
 definePageMeta({
   middleware: jwtMiddleware,
@@ -41,6 +44,10 @@ definePageMeta({
         >
           <v-card variant="elevated" color="primary" style="max-width:500px!important">
             <v-card-text>{{ message.message }}</v-card-text>
+            <v-card-text>
+              <small class="status-text">{{ message.status }}</small>&nbsp;
+              <small>{{ transformDateTime(message.created_at) }}</small>
+            </v-card-text>
           </v-card>
         </div>
         <!-- <div class="d-flex flex-column align-start">
@@ -55,3 +62,9 @@ definePageMeta({
   </div>
   
 </template>
+
+<style scoped lang="scss">
+.status-text {
+  text-transform: capitalize;
+}
+</style>

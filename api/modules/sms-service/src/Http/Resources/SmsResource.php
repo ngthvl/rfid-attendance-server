@@ -25,6 +25,7 @@ class SmsResource extends JsonResource
             'message',
             'type',
             'status',
+            'created_at',
         ]);
     }
 }

@@ -4,61 +4,55 @@ import localeData from 'dayjs/plugin/localeData';
 
 import jwtMiddleware from "~/middleware/jwtMiddleware";
 
-import {useStudentAttendanceStore} from '~/models/studentAttendance';
+import { useStudentAttendanceStore } from '~/models/studentAttendance';
 
 import { DetectionLog } from "~/models/detectionLog";
 import { EducationLevelType, SectionType, useCurriculumStore } from '~/models/curriculum';
+import { dayCollectionType } from '~/types/dayCollectionType';
+import { attendanceOnDay } from '~/composables/useAttendanceOnDay';
+import { transformDate } from '~/helpers/util';
 
 dayjs.extend(localeData)
+
+const dateRange: Ref<{
+  from: Dayjs,
+  to: Dayjs
+}> = ref({
+  from: dayjs().startOf('month'),
+  to: dayjs().endOf('month'),
+});
+
+const datePickerFrom = ref();
+const datePickerTo = ref();
 
 definePageMeta({
   middleware: jwtMiddleware,
   layout: 'admin',
 })
 
-interface dayCollectionType {
-  date: string,
-  day: string,
-  rawDate: Dayjs
-}
-
 const weekdays = computed(()=>{
-  const currDay = dayjs()
-  const monthLen = currDay.daysInMonth()
+  let currDay = dayjs(dateRange.value.from.toISOString());
+  const daysLen = dateRange.value.to.diff(dateRange.value.from, 'day');
   let days: dayCollectionType[] = [];
-  for(let d = 1; d<=monthLen; d++){
-    const ls = currDay.set('date', d)
-    const wkd = ls.format('d');
+  for(let d = 1; d<=daysLen; d++){
+    const wkd = currDay.format('d');
     if(wkd !== '6' && wkd!=='0'){
       days.push({
-        date: ls.format('DD-MM-YYYY'),
-        day: ls.format('ddd'),
-        rawDate: ls
-      })
+        date: currDay.format('DD-MM-YYYY'),
+        day: currDay.format('ddd'),
+        rawDate: dayjs(currDay.toISOString())
+      });
     }
+    currDay = currDay.add(1, 'day');
   }
   return days;
 })
-
-const attendanceOnDay = (date_time: Dayjs, detections?:DetectionLog[]) => {
-  const currDay = date_time;
-  let attendance = 'A';
-  if(detections){
-    detections.forEach((v, i)=>{
-      const ddate = dayjs(v.detection_dt)
-      if (ddate.isSame(currDay, 'date')){
-        attendance = 'P';
-      }
-    })
-  }
-  return attendance
-}
 
 const attendanceStore = useStudentAttendanceStore();
 const curriculumStore = useCurriculumStore();
 
 const { educationLevels } = storeToRefs(curriculumStore);
-const { attendance } = storeToRefs(attendanceStore);
+const { attendance, filters } = storeToRefs(attendanceStore);
 
 const selectedEduLevel: Ref<EducationLevelType|undefined> = ref();
 
@@ -66,35 +60,59 @@ const selectedSection: Ref<SectionType|undefined> = ref();
 
 const currentSection: Ref<SectionType[]> = ref([]);
 
-watch(selectedEduLevel, ()=>{
+watch(selectedEduLevel, () => {
   if(selectedEduLevel.value){
+    filters.value.level = selectedEduLevel.value.id;
     if(selectedEduLevel.value?.sections){
-      currentSection.value = selectedEduLevel.value.sections
+      currentSection.value = selectedEduLevel.value.sections;
     }
   }
-})
+});
+
+watch(selectedSection, () => {
+  if(selectedSection.value) filters.value.section = selectedSection.value.id;
+});
+
+watch(datePickerFrom, () => {
+  dateRange.value.from = dayjs(datePickerFrom.value)
+});
+watch(datePickerTo, () => {
+  dateRange.value.to = dayjs(datePickerTo.value)
+});
 
 onMounted(()=>{
-  attendanceStore.listAttendance()
-})
+  attendanceStore.listAttendance();
+  curriculumStore.listEducationLevels();
+});
 
 </script>
 
 <template>
   <v-container>
     <v-card class="shadow mt-4 mx-5">
-      <v-card-title>RFID Terminals</v-card-title>
+      <v-card-title>Student Attendance</v-card-title>
 
       <v-card-item>
         <v-row>
           <v-col cols="2">
-            <v-select label="Level" :items="educationLevels" item-title="education_level_name" v-model="selectedEduLevel" return-object></v-select>
+            <v-select label="Level" :items="educationLevels" item-title="education_level_name" variant="outlined" v-model="selectedEduLevel" return-object></v-select>
           </v-col>
           <v-col cols="2">
-            <v-select label="Section" :items="currentSection" item-title="section_name" v-model="selectedSection" return-object></v-select>
+            <v-select label="Section" :items="currentSection" item-title="section_name" variant="outlined" v-model="selectedSection" return-object></v-select>
           </v-col>
           <v-col cols="4">
-            <v-btn color="success">Print</v-btn>
+            <v-btn>
+              From: {{ transformDate(dateRange.from) }}
+              <v-dialog activator="parent" width="300">
+                <v-date-picker v-model="datePickerFrom"></v-date-picker>
+              </v-dialog>
+            </v-btn>
+            <v-btn>
+              To: {{ transformDate(dateRange.to) }}
+              <v-dialog activator="parent" width="300">
+                <v-date-picker v-model="datePickerTo"></v-date-picker>
+              </v-dialog>
+            </v-btn>
           </v-col>
         </v-row>
       </v-card-item>

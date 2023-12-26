@@ -1,21 +1,33 @@
 import {Ref} from "vue";
 import {useCookie, useRouter} from "nuxt/app";
+import { Admin } from "~/models/admin";
+
+interface tokenResponseType {
+    data: {
+        access_token: string,
+        user: Admin
+    }
+}
 
 export const useLogin = async (creds: Ref) => {
-    const { data } = await useApi(
+    const { data, error } = await useApi(
         '/admin/auth',
         {
             method: 'POST',
             body: creds.value,
         },
     );
-    if(data?.value?.data?.access_token){
+    if(error.value){
+
+    }
+    if(!error.value && data.value){
+        const response: tokenResponseType = data.value as tokenResponseType
         const cookie = useCookie('accessToken');
         const router = useRouter();
-        cookie.value = data?.value?.data?.access_token;
+        cookie.value = response.data.access_token;
 
         const userData = useState('userData');
-        userData.value = data?.value?.data?.user;
+        userData.value = response.data.user;
 
         router.push('/');
     }

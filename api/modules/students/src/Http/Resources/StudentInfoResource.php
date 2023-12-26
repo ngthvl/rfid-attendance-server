@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Tamani\Students\Models\Student;
 
-class StudentResource extends JsonResource
+class StudentInfoResource extends JsonResource
 {
     /** @var Student */
     public $resource;
@@ -30,6 +30,7 @@ class StudentResource extends JsonResource
             'avatar' => $this->avatar,
             'level' => $this->level,
             'section' => $this->section,
+            'attendance' => $this->attendance,
             'rfid_tag' => $this->activeRfidTag(),
         ];
     }

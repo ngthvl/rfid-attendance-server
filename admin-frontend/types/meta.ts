@@ -15,6 +15,10 @@ export interface ResponseMeta {
   total: number
 }
 
+export interface JsonResourceType {
+  meta: ResponseMeta
+}
+
 export const ResponseMetaDefaults = {
   current_page: 1,
   from: 1,
