@@ -29,7 +29,19 @@ class FileUploadController extends Controller
             ->toMediaCollection('default', 'public');
 
         return new JsonResource([
-            'url' => $file->getAvailableFullUrl([])
+            'url' => $file->getAvailableFullUrl([]),
+            'revert' => route('file.revert', ['id'=>$file->uuid])
         ]);
+    }
+
+    public function revert(string $id)
+    {
+        /** @var Admin $user */
+        $user = auth()->user();
+
+        $media = $user->media()->where('uuid', $id)->first();
+        $media->delete();
+
+        return $this->respondWithEmptyData();
     }
 }

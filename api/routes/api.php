@@ -24,5 +24,6 @@ Route::post('v1/webhooks/sms-server-webhook/{tag}', function(Request $request, s
 
 Route::middleware(['auth'])->group(function(){
     Route::get('v1/file/upload', [\App\Http\Controllers\FileUploadController::class, 'generateUploadLink']);
-    Route::post('v1/file/upload', [\App\Http\Controllers\FileUploadController::class, 'upload'])->middleware(['signed', 'throttle'])->name('file.upload');
+    Route::post('v1/file/upload', [\App\Http\Controllers\FileUploadController::class, 'upload'])->middleware(['throttle'])->name('file.upload');
+    Route::post('v1/file/{id}/revert', [\App\Http\Controllers\FileUploadController::class, 'revert'])->middleware(['throttle'])->name('file.revert');
 });
