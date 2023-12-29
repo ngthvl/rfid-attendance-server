@@ -54,7 +54,7 @@ class StudentAttendanceController extends Controller
     {
         $student = Student::find($id);
         $qb = QueryBuilder::for(RfidOutput::class)
-            ->selectRaw('min(detection_dt) as time_in, max(detection_dt) as time_out, DATE(detection_dt) as detection_dt')
+            ->selectRaw('min(detection_dt) as time_in, max(detection_dt) as time_out, DATE(MIN(detection_dt)) as detection_dt')
             ->whereIn('detected_uid', $student->tagList())
             ->orderBy(DB::raw('DATE(detection_dt)'))
             ->paginate();
