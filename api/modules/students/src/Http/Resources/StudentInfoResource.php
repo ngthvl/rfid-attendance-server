@@ -30,7 +30,7 @@ class StudentInfoResource extends JsonResource
             'avatar' => $this->avatar,
             'level' => $this->level,
             'section' => $this->section,
-            'attendance' => $this->attendance,
+//            'attendance' => $this->attendance,
             'rfid_tag' => $this->activeRfidTag(),
         ];
     }

@@ -6,10 +6,16 @@ import { Student } from "./student";
 import { RfidTerminalType } from "./rfidTerminal";
 
 export interface DetectionLog {
-  detected_uid: string,
-  detection_dt: string,
-  allocated: Student,
-  terminal?: RfidTerminalType
+  detected_uid: string;
+  detection_dt: string;
+  allocated: Student;
+  terminal?: RfidTerminalType;
+}
+
+export interface TimeInOutLog {
+  time_in: string;
+  time_out: string;
+  detection_dt: string;
 }
 
 interface filterType {

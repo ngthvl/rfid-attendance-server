@@ -4,6 +4,7 @@
 namespace Tamani\RfidTerminal\Traits;
 
 
+use Illuminate\Support\Facades\DB;
 use Tamani\RfidTerminal\Models\RfidOutput;
 use Tamani\RfidTerminal\Models\RfidTagAllocation;
 
@@ -19,8 +20,25 @@ trait HasTagAllocation
         return $this->morphMany(RfidTagAllocation::class, 'allocation')->orderBy('created_at', 'desc')->first();
     }
 
+    public function tagList(): array
+    {
+        return array_column($this->allocatedRfidTags->toArray(), 'tag_data');
+    }
+
+    public function detections()
+    {
+        return $this->hasManyThrough(
+            RfidOutput::class,
+            RfidTagAllocation::class,
+            'allocation_id',
+            'detected_uid',
+            'id',
+            'tag_data'
+        );
+    }
+
     public function attendance()
     {
-        return $this->hasManyThrough(RfidOutput::class, RfidTagAllocation::class, 'allocation_id', 'detected_uid', 'id', 'tag_data');
+        return $this->detections()->orderBy('rfid_outputs.detection_dt')->groupBy(DB::raw('DATE(rfid_outputs.detection_dt)'));
     }
 }

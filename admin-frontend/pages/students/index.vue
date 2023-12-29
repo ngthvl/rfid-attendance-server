@@ -51,8 +51,8 @@ const printMultiple = () => {
   router.push('/printID');
 }
 
-const submitFormAction = async (e) => {
-  const formData = new FormData(e.target);
+const submitFormAction = async (e: Event) => {
+  const formData = new FormData(e.target as HTMLFormElement);
   const {data, error} = await studentstore.updateFromCsv(formData);
 
   if(!error.value){

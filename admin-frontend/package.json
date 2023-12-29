@@ -20,6 +20,7 @@
     "@mdi/font": "^7.3.67",
     "@pinia/nuxt": "^0.5.1",
     "@types/jsonwebtoken": "^9.0.5",
+    "chart.js": "^4.4.1",
     "dayjs": "^1.11.10",
     "html-to-image": "^1.11.11",
     "jsonwebtoken": "^9.0.2",

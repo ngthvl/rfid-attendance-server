@@ -7,6 +7,7 @@ use App\Support\Phone;
 use GuzzleHttp\Promise\Create;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -63,7 +64,7 @@ class StudentAccountController extends Controller
      */
     public function show(string $uuid): StudentInfoResource|\Illuminate\Http\JsonResponse
     {
-        $qb = Student::find($uuid);
+        $qb = QueryBuilder::for(Student::class)->find($uuid);
 
         if(!$qb){
             return $this->respondWithError('student_not_found_error', 404, 'Student Not Found');

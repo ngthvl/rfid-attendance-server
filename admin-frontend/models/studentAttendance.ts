@@ -3,6 +3,7 @@ import type { JsonResourceType, ResponseMeta } from "~/types/meta";
 import { ResponseMetaDefaults } from '~/types/meta';
 import {defineStore} from "pinia";
 import { DetectionLog } from "~/models/detectionLog";
+import { LocationQueryRaw } from "vue-router";
 
 export interface StudentAttendance {
   student_id: string;
@@ -21,6 +22,8 @@ interface filterType {
   page: number;
   level?: number;
   section?: number;
+  from_date?: string;
+  to_date?: string;
 }
 
 interface StudentAttendanceResponse extends JsonResourceType {
@@ -35,6 +38,8 @@ export const useStudentAttendanceStore = defineStore('attendance', () => {
     // 'filter[search]': string;
     'filter[section_id]'?: number;
     'filter[education_level_id]'?: number;
+    'filter[from_date]'?: string;
+    'filter[to_date]'?: string;
     'page': number;
   }> = ref({
     // 'filter[search]': '',
@@ -46,7 +51,7 @@ export const useStudentAttendanceStore = defineStore('attendance', () => {
 
   const listAttendance = async () => {
     const {data, error} = await useApi('/admin/students/attendance', {
-      params: params.value,
+      params: Object.assign({}, params.value),
       method: "GET"
     });
 
@@ -69,10 +74,12 @@ export const useStudentAttendanceStore = defineStore('attendance', () => {
     params.value['page'] = newstate.page;
     params.value['filter[section_id]'] = newstate.level;
     params.value['filter[education_level_id]'] = newstate.section;
+    params.value['filter[from_date]'] = newstate.from_date;
+    params.value['filter[to_date]'] = newstate.to_date;
 
     router().push({
       path: route().path,
-      query: newstate
+      query: filters.value
     });
 
     listAttendance();

@@ -21,6 +21,19 @@ const dateRange: Ref<{
   from: dayjs().startOf('month'),
   to: dayjs().endOf('month'),
 });
+const attendanceStore = useStudentAttendanceStore();
+const curriculumStore = useCurriculumStore();
+
+const { educationLevels } = storeToRefs(curriculumStore);
+const { attendance, filters } = storeToRefs(attendanceStore);
+
+const selectedEduLevel: Ref<EducationLevelType|undefined> = ref();
+
+const selectedSection: Ref<SectionType|undefined> = ref();
+
+const currentSection: Ref<SectionType[]> = ref([]);
+
+const printable = ref();
 
 const datePickerFrom = ref();
 const datePickerTo = ref();
@@ -48,17 +61,13 @@ const weekdays = computed(()=>{
   return days;
 })
 
-const attendanceStore = useStudentAttendanceStore();
-const curriculumStore = useCurriculumStore();
+const handlePrint = () => {
+  const mywindow = window.open('', 'PRINT', 'height=400,width=600');
+  console.log(printable.value)
+  mywindow?.document.write(printable.value.outerHtml);
+}
 
-const { educationLevels } = storeToRefs(curriculumStore);
-const { attendance, filters } = storeToRefs(attendanceStore);
 
-const selectedEduLevel: Ref<EducationLevelType|undefined> = ref();
-
-const selectedSection: Ref<SectionType|undefined> = ref();
-
-const currentSection: Ref<SectionType[]> = ref([]);
 
 watch(selectedEduLevel, () => {
   if(selectedEduLevel.value){
@@ -74,12 +83,13 @@ watch(selectedSection, () => {
 });
 
 watch(datePickerFrom, () => {
-  dateRange.value.from = dayjs(datePickerFrom.value)
+  dateRange.value.from = dayjs(datePickerFrom.value);
+  filters.value.from_date = dateRange.value.from.toISOString();
 });
 watch(datePickerTo, () => {
   dateRange.value.to = dayjs(datePickerTo.value)
+  filters.value.to_date = dateRange.value.to.toISOString();
 });
-
 onMounted(()=>{
   attendanceStore.listAttendance();
   curriculumStore.listEducationLevels();
@@ -89,7 +99,7 @@ onMounted(()=>{
 
 <template>
   <v-container>
-    <v-card class="shadow mt-4 mx-5">
+    <v-card class="shadow mt-4 mx-5" ref="printable">
       <v-card-title>Student Attendance</v-card-title>
 
       <v-card-item>
@@ -104,13 +114,13 @@ onMounted(()=>{
             <v-btn>
               From: {{ transformDate(dateRange.from) }}
               <v-dialog activator="parent" width="300">
-                <v-date-picker v-model="datePickerFrom"></v-date-picker>
+                <v-date-picker v-model="datePickerFrom" :max="datePickerTo"></v-date-picker>
               </v-dialog>
             </v-btn>
             <v-btn>
               To: {{ transformDate(dateRange.to) }}
               <v-dialog activator="parent" width="300">
-                <v-date-picker v-model="datePickerTo"></v-date-picker>
+                <v-date-picker v-model="datePickerTo" :min="datePickerFrom"></v-date-picker>
               </v-dialog>
             </v-btn>
           </v-col>
@@ -147,6 +157,7 @@ th.rotated-text > div {
     font-size: 10px;
     font-weight: bolder;
     color: black;
+    max-width: 50px!important;
 }
 
 th.rotated-text {

@@ -6,14 +6,19 @@ import jwtMiddleware from "~/middleware/jwtMiddleware";
 import { Student, studentDefaults, useStudentsStore } from "~/models/student";
 import { useCurriculumStore } from "~/models/curriculum";
 import { dayCollectionType } from '~/types/dayCollectionType';
-import { attendanceOnDay } from '~/composables/useAttendanceOnDay';
+import { attendanceOnDay, attendanceOnDay2, getTimeIn, getTimeOut } from '~/composables/useAttendanceOnDay';
+import { TimeInOutLog } from '~/models/detectionLog';
+import { useStudentDailyAttendanceStore } from '~/models/dailyAttendance';
 
 dayjs.extend(localeData)
 
 const studentData: Ref<Student> = ref(studentDefaults);
+const studentAttendance: Ref<TimeInOutLog[]|undefined> = ref();
 
 const curriulumStore = useCurriculumStore();
 const studentStore = useStudentsStore();
+const studentAttendanceStore = useStudentDailyAttendanceStore();
+
 
 const route = useRoute();
 
@@ -42,10 +47,12 @@ const weekdays = computed(()=>{
 
 
 onMounted(async () => {
-  const studentFetch = await studentStore.getStudentInfo(route.params['id'] as string)
+  const studentFetch = await studentStore.getStudentInfo(route.params['id'] as string);
+  
 
   if(studentFetch){
     studentData.value = studentFetch;
+    studentAttendance.value = await studentAttendanceStore.listDailyAttendance(studentFetch);
   }
 });
 
@@ -59,17 +66,21 @@ onMounted(async () => {
         <v-table>
           <thead>
             <tr>
-              <th colspan="2"><h3>Student: {{ studentData.last_name }}, {{ studentData.first_name }}</h3></th>
+              <th colspan="4"><h3>Student: {{ studentData.last_name }}, {{ studentData.first_name }}</h3></th>
             </tr>
             <tr>
               <th>Date</th>
               <th>Attendance</th>
+              <th>Time In</th>
+              <th>Time Out</th>
             </tr>
           </thead>
-          <tbody v-if="studentData.attendance">
+          <tbody v-if="studentAttendance">
             <tr v-for="(w, key) in weekdays" :key="key">
               <th>{{ w.date }}</th>
-              <td>{{ attendanceOnDay(w.rawDate, studentData.attendance) }}</td>
+              <td>{{ attendanceOnDay2(w.rawDate, studentAttendance) }}</td>
+              <td>{{ getTimeIn(w.rawDate, studentAttendance) }}</td>
+              <td>{{ getTimeOut(w.rawDate, studentAttendance) }}</td>
             </tr>
           </tbody>
         </v-table>
