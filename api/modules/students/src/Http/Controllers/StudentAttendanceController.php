@@ -57,6 +57,7 @@ class StudentAttendanceController extends Controller
             ->selectRaw('min(detection_dt) as time_in, max(detection_dt) as time_out, DATE(MIN(detection_dt)) as attendance_dt')
             ->whereIn('detected_uid', $student->tagList())
             ->orderBy(DB::raw('DATE(detection_dt)'))
+            ->groupBy(DB::raw('DATE(detection_dt)'))
             ->paginate();
 
         return JsonResource::collection($qb);
