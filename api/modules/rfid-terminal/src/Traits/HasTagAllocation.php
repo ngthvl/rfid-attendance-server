@@ -39,11 +39,10 @@ trait HasTagAllocation
 
     public function attendance()
     {
-        $tags = $this->tagList();
         return $this->detections()
-            ->selectRaw('min(rfid_outputs.detection_dt) as detection_dt')
-            ->orderBy('rfid_outputs.detection_dt')
-            ->groupBy(DB::raw('DATE(rfid_outputs.detection_dt)'))
+            ->selectRaw('date_detected as detection_dt')
+            ->orderBy('date_detected')
+            ->groupBy('date_detected')
             ->groupBy(DB::raw('rfid_tag_allocations.allocation_id'))
             ;
     }

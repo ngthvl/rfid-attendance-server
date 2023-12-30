@@ -28,11 +28,11 @@ class StudentAttendanceController extends Controller
         $qb = QueryBuilder::for(Student::class)
             ->with('attendance', function($query){
                 if(Request::has('filter.from_date')){
-                    $query->whereDate('detection_dt', '>=', Request::input('filter.from_date'));
+                    $query->whereDate('date_detected', '>=', Request::input('filter.from_date'));
                 }
 
                 if(Request::has('filter.to_date')){
-                    $query->whereDate('detection_dt', '<=', Request::input('filter.to_date'));
+                    $query->whereDate('date_detected', '<=', Request::input('filter.to_date'));
                 }
             })
             ->allowedFilters([
