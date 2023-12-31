@@ -109,6 +109,8 @@ services:
 #    command: /usr/bin/supervisord
     depends_on:
       - api
+    networks:
+      server-backend-network:
 
   admin_frontend:
     build:
