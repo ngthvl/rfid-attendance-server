@@ -104,7 +104,9 @@ services:
     volumes:
     - ./api/supervisord-dev.conf:/etc/supervisor/conf.d/supervisord.conf
     - app_vendor_files:/var/www/html/vendor
+    - ./api/storage:/var/www/html/storage
     - ./api/:/var/www/html
+    command: /usr/bin/supervisord
     depends_on:
       - api
 
