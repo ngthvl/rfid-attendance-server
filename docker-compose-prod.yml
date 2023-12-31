@@ -106,7 +106,7 @@ services:
     - app_vendor_files:/var/www/html/vendor
     - ./api/storage:/var/www/html/storage
     - ./api/:/var/www/html
-    command: /usr/bin/supervisord
+#    command: /usr/bin/supervisord
     depends_on:
       - api
 
