@@ -95,6 +95,17 @@ services:
       - ./.secrets/oauth-private.key:/var/www/html/storage/oauth-private.key
       - ./.secrets/oauth-public.key:/var/www/html/storage/oauth-public.key
       - sms_server_jobs:/var/www/html/storage/app/sms-jobs
+      - app_vendor_files:/var/www/html/vendor
+
+  api_worker:
+    image: php:8.2-fpm
+    volumes:
+    - ./api/supervisord-dev.conf:/etc/supervisor/conf.d/supervisord.conf
+    - app_vendor_files:/var/www/html/vendor
+    - ./api/:/var/www/html
+    command: /usr/bin/supervisord
+    depends_on:
+      - api
 
   admin_frontend:
     build:
@@ -143,3 +154,4 @@ volumes:
   postgres_data:
   sms_server_jobs:
   laravel_logs:
+  app_vendor_files:
