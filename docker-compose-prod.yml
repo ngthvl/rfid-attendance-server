@@ -89,7 +89,7 @@ services:
       server-backend-network:
       server-ipnet:
         ipv4_address: 192.168.10.10
-    user: 'www-data:www-data'
+    user: root
     volumes:
       - ./api/storage/app:/var/www/html/storage/app
       - ./.secrets/oauth-private.key:/var/www/html/storage/oauth-private.key
