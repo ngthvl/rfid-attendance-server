@@ -32,6 +32,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN composer update
 RUN composer install --no-dev
+RUN composer install --dev
 
 #RUN php artisan migrate
 RUN php artisan clear
