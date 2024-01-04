@@ -51,6 +51,8 @@ class AttendanceController extends Controller
             return $allocation->allocation;
         }
 
+        throw new \Exception('error');
+
         return $this->respondWithError('INVALID_ENTRY', 500, 'Unknown Tag');
     }
 }
