@@ -103,7 +103,6 @@ services:
       dockerfile: ./api/Dockerfile-worker.prod
     volumes:
     - ./api/supervisord-dev.conf:/etc/supervisor/conf.d/supervisord.conf
-    - app_vendor_files:/var/www/html/vendor
     - ./api/storage:/var/www/html/storage
     - ./api/:/var/www/html
     depends_on:
