@@ -21,17 +21,15 @@ class AttendanceController extends Controller
         $uid = $request->input('id');
         $ts = $request->input('ts', time());
 
-//        $baseLine = (Carbon::now())->sub('seconds', env('ATTENDANCE_INTERVAL_SECS', 60));
+        $baseLine = (Carbon::now())->sub('seconds', env('ATTENDANCE_INTERVAL_SECS', 60));
 
-//        $outlast = RfidOutput::where('detected_uid', $uid)->where('detection_dt', '<=', $baseLine)->first();
+        $outlast = RfidOutput::where('detected_uid', $uid)->where('detection_dt', '<=', $baseLine)->first();
 
-//        if($outlast){
-//            return $this->respondWithError('ALREADY_DETECTED', 422, 'Throttled');
-//        }
+        if($outlast){
+            return $this->respondWithError('ALREADY_DETECTED', 422, 'Throttled');
+        }
 
         $allocation = RfidTagAllocation::where('tag_data', $uid)->first();
-
-        return $allocation;
 
         if($allocation){
             $td = Carbon::createFromTimestamp($ts);
@@ -53,6 +51,6 @@ class AttendanceController extends Controller
             return $allocation->allocation;
         }
 
-        return $this->respondWithError('INVALID_ENTRY', 500, 'Unknown Tag');
+        return $this->respondWithError('INVALID_ENTRY', 422, 'Unknown Tag');
     }
 }
