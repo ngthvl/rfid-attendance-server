@@ -32,7 +32,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN composer update
 RUN composer install
-RUN composer install --dev
+
 #RUN php artisan migrate
 RUN php artisan clear
 RUN php artisan storage:link --quiet --no-interaction --force
