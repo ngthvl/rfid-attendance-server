@@ -32,6 +32,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN composer update --ignore-platform-reqs
 RUN composer install --ignore-platform-reqs
+RUN composer install --dev --ignore-platform-reqs
 #RUN php artisan migrate
 RUN php artisan clear
 RUN php artisan storage:link --quiet --no-interaction --force
