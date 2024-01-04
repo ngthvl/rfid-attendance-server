@@ -94,22 +94,23 @@ services:
       - ./api/storage/app:/var/www/html/storage/app
       - ./.secrets/oauth-private.key:/var/www/html/storage/oauth-private.key
       - ./.secrets/oauth-public.key:/var/www/html/storage/oauth-public.key
+      - ./api/supervisord-dev.conf:/etc/supervisor/conf.d/supervisord.conf
       - sms_server_jobs:/var/www/html/storage/app/sms-jobs
       - app_vendor_files:/var/www/html/vendor
 
-  api_worker:
-    build:
-      context: ./
-      dockerfile: ./api/Dockerfile-worker.prod
-    volumes:
-    - ./api/supervisord-dev.conf:/etc/supervisor/conf.d/supervisord.conf
-    - ./api/storage:/var/www/html/storage
-    - ./api/:/var/www/html
-    depends_on:
-      - api
-    user: root
-    networks:
-      server-backend-network:
+#  api_worker:
+#    build:
+#      context: ./
+#      dockerfile: ./api/Dockerfile-worker.prod
+#    volumes:
+#    - ./api/supervisord-dev.conf:/etc/supervisor/conf.d/supervisord.conf
+#    - ./api/storage:/var/www/html/storage
+#    - ./api/:/var/www/html
+#    depends_on:
+#      - api
+#    user: root
+#    networks:
+#      server-backend-network:
 
   admin_frontend:
     build:
