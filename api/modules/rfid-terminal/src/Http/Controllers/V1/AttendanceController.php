@@ -25,9 +25,9 @@ class AttendanceController extends Controller
 
         $outlast = RfidOutput::where('detected_uid', $uid)->where('detection_dt', '<=', $baseLine)->first();
 
-        if($outlast){
-            return $this->respondWithError('ALREADY_DETECTED', 422, 'Throttled');
-        }
+//        if($outlast){
+//            return $this->respondWithError('ALREADY_DETECTED', 422, 'Throttled');
+//        }
 
         $allocation = RfidTagAllocation::where('tag_data', $uid)->first();
 

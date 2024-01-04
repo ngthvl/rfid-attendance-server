@@ -92,7 +92,7 @@ return [
     */
 
     'only_paths' => [
-        // 'api/*'
+         'api/v1/terminal'
     ],
 
     'ignore_paths' => [
