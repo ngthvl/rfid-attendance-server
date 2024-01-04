@@ -18,8 +18,9 @@ export interface StudentAttendance {
 }
 
 interface filterType {
-  search: string;
+  search?: string;
   page: number;
+  per_page?: number;
   level?: number;
   section?: number;
   from_date?: string;
@@ -35,14 +36,14 @@ export const useStudentAttendanceStore = defineStore('attendance', () => {
   const attendance: Ref<StudentAttendance[]> = ref([]);
 
   const params: Ref<{
-    // 'filter[search]': string;
+    'filter[search]'?: string;
     'filter[section_id]'?: number;
     'filter[education_level_id]'?: number;
     'filter[from_date]'?: string;
     'filter[to_date]'?: string;
+    'per_page'?: number;
     'page': number;
   }> = ref({
-    // 'filter[search]': '',
     'page': 1,
   })
 
@@ -65,17 +66,23 @@ export const useStudentAttendanceStore = defineStore('attendance', () => {
   const meta: Ref<ResponseMeta> = ref(ResponseMetaDefaults);
 
   const filters: Ref<filterType> = ref({
-    search: "",
-    page: 1
+    page: 1,
+    per_page: 15,
   });
 
-  watch(filters, (newstate: filterType)=>{
-    // params.value['filter[search]'] = newstate.search;
-    params.value['page'] = newstate.page;
-    params.value['filter[section_id]'] = newstate.level;
-    params.value['filter[education_level_id]'] = newstate.section;
-    params.value['filter[from_date]'] = newstate.from_date;
-    params.value['filter[to_date]'] = newstate.to_date;
+  const setPerPage = (limit: number) => {
+    filters.value.per_page = limit;
+    filters.value.page = 1;
+  }
+
+  watch(filters, (old, newRec)=>{
+    params.value['filter[search]'] = filters.value.search;
+    params.value['page'] = filters.value.page;
+    params.value['per_page'] = filters.value.per_page;
+    params.value['filter[section_id]'] = filters.value.level;
+    params.value['filter[education_level_id]'] = filters.value.section;
+    params.value['filter[from_date]'] = filters.value.from_date;
+    params.value['filter[to_date]'] = filters.value.to_date;
 
     router().push({
       path: route().path,
@@ -91,6 +98,7 @@ export const useStudentAttendanceStore = defineStore('attendance', () => {
     attendance,
     meta,
     filters,
-    listAttendance
+    listAttendance,
+    setPerPage
   }
 })

@@ -40,8 +40,30 @@ class StudentAttendanceController extends Controller
                 'education_level_id',
                 AllowedFilter::callback('from_date', function(Builder $query, $value){}),
                 AllowedFilter::callback('to_date', function(Builder $query, $value){}),
+                AllowedFilter::callback('search', function(Builder $query, $value){
+                    $query->orWhere('first_name', 'like', '%' . $value . '%');
+                    $query->orWhere('last_name', 'like', '%' . $value . '%');
+                }),
             ])
-            ->get();
+            ->paginate(Request::input('per_page', 15));
+
+        return JsonResource::collection($qb);
+    }
+
+    public function dailyAttendance()
+    {
+        $qb = QueryBuilder::for(Student::class)
+            ->selectRaw('students.id, student_id, first_name, last_name, count(rfid_tag_allocations.id) as tags, date_detected, min(detection_dt) as time_in, max(detection_dt) as time_out')
+            ->leftJoin('rfid_tag_allocations', 'allocation_id', '=', 'students.id')
+            ->leftJoin('rfid_outputs', 'detected_uid', '=', 'tag_data')
+            ->groupBy(DB::raw('students.id, student_id, first_name, last_name, rfid_outputs.date_detected'))
+
+            ->allowedFilters([
+                AllowedFilter::callback('date', function(Builder $query, $value){
+                    $query->whereDate('date_detected', $value);
+                })
+            ])
+            ->paginate(Request::input('per_page', 15));
 
         return JsonResource::collection($qb);
     }
@@ -50,7 +72,7 @@ class StudentAttendanceController extends Controller
      * @param string $id
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function dailyAttendance(string $id): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function studentDailyAttendance(string $id): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
         $student = Student::find($id);
         $qb = QueryBuilder::for(RfidOutput::class)

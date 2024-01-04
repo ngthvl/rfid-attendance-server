@@ -37,6 +37,7 @@ class AttendanceController extends Controller
             $out = new RfidOutput();
             $out->detected_uid = $uid;
             $out->detection_dt = $td;
+            $out->date_detected = $td;
 
             $out->terminal()->associate(auth()->user());
 

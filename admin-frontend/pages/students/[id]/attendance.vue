@@ -19,7 +19,6 @@ const curriulumStore = useCurriculumStore();
 const studentStore = useStudentsStore();
 const studentAttendanceStore = useStudentDailyAttendanceStore();
 
-
 const route = useRoute();
 
 definePageMeta({
@@ -62,6 +61,7 @@ onMounted(async () => {
   <v-container>
     <v-card class="shadow mt-4 mx-5">
       <v-card-title>Student Attendance</v-card-title>
+
       <v-card-item>
         <v-table>
           <thead>
@@ -85,6 +85,7 @@ onMounted(async () => {
           </tbody>
         </v-table>
       </v-card-item>
+      
       <v-card-item class="mb-2">
         <v-btn rounded="xl" class="mr-5" to="/students">Back</v-btn>
       </v-card-item>

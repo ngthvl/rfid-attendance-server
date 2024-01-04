@@ -9,9 +9,7 @@ const terminalStore = useRfidTerminalStore();
 const { terminals } = storeToRefs(terminalStore);
 
 onMounted(()=>{
-  nextTick(()=>{
-    terminalStore.listTerminals();
-  })
+  terminalStore.listTerminals();
 })
 
 definePageMeta({
