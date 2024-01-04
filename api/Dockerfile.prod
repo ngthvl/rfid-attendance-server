@@ -30,9 +30,9 @@ COPY ./api/.env.development ./.env
 #COPY ./../.secrets/oauth-public.key ./storage/oauth-public.key
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-RUN composer update --ignore-platform-reqs
-RUN composer install --ignore-platform-reqs
-RUN composer install --dev --ignore-platform-reqs
+RUN composer update
+RUN composer install
+RUN composer install --dev
 #RUN php artisan migrate
 RUN php artisan clear
 RUN php artisan storage:link --quiet --no-interaction --force
