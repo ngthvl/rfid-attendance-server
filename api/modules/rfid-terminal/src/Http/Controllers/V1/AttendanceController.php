@@ -31,6 +31,8 @@ class AttendanceController extends Controller
 
         $allocation = RfidTagAllocation::where('tag_data', $uid)->first();
 
+        return $allocation;
+
         if($allocation){
             $td = Carbon::createFromTimestamp($ts);
 
@@ -50,8 +52,6 @@ class AttendanceController extends Controller
 
             return $allocation->allocation;
         }
-
-        throw new \Exception('error');
 
         return $this->respondWithError('INVALID_ENTRY', 500, 'Unknown Tag');
     }
