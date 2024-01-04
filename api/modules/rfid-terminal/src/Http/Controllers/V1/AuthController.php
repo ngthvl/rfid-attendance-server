@@ -47,7 +47,7 @@ class AuthController extends Controller
         $password = $request->input('password');
 
         /** @var RfidTerminal $user */
-        $user = RfidTerminal::where('id', $deviceId)
+        $user = RfidTerminal::where('terminal_id', $deviceId)
             ->where('ip_address', $deviceIp)->first();
 
         if($user && Hash::check($password, $user->secret)){
