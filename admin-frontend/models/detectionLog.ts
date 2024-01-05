@@ -18,6 +18,12 @@ export interface TimeInOutLog {
   detection_dt: string;
 }
 
+export interface DailyTimeInOutLog {
+  time_in: string;
+  time_out: string;
+  attendance_dt: string;
+}
+
 interface filterType {
   search: string
   page: number

@@ -1,10 +1,10 @@
 import { JsonResourceType } from "~/types/meta";
-import { TimeInOutLog } from "./detectionLog";
+import { DailyTimeInOutLog } from "./detectionLog";
 import { Student } from "./student"
 
 
 interface DailyAttendanceResponseType extends JsonResourceType {
-  data: TimeInOutLog[]
+  data: DailyTimeInOutLog[]
 }
 
 export const useStudentDailyAttendanceStore = defineStore('student-daily', () => {
