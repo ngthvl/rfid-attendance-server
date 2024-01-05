@@ -79,8 +79,8 @@ export const useStudentAttendanceStore = defineStore('attendance', () => {
     params.value['filter[search]'] = filters.value.search;
     params.value['page'] = filters.value.page;
     params.value['per_page'] = filters.value.per_page;
-    params.value['filter[section_id]'] = filters.value.level;
-    params.value['filter[education_level_id]'] = filters.value.section;
+    params.value['filter[section_id]'] = filters.value.section;
+    params.value['filter[education_level_id]'] = filters.value.level;
     params.value['filter[from_date]'] = filters.value.from_date;
     params.value['filter[to_date]'] = filters.value.to_date;
 

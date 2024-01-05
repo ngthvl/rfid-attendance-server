@@ -41,6 +41,7 @@ class StudentAttendanceController extends Controller
                 AllowedFilter::callback('from_date', function(Builder $query, $value){}),
                 AllowedFilter::callback('to_date', function(Builder $query, $value){}),
                 AllowedFilter::callback('search', function(Builder $query, $value){
+                    $value = strtolower($value);
                     $query->orWhere('first_name', 'like', '%' . $value . '%');
                     $query->orWhere('last_name', 'like', '%' . $value . '%');
                 }),

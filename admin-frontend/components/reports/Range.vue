@@ -79,6 +79,7 @@ watch(selectedEduLevel, () => {
 });
 
 watch(selectedSection, () => {
+// console.log(selectedSection.value.id)
   if(selectedSection.value) filters.value.section = selectedSection.value.id;
 });
 
