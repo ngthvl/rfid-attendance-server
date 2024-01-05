@@ -36,8 +36,8 @@ class StudentAttendanceController extends Controller
                 }
             })
             ->allowedFilters([
-                'section_id',
-                'education_level_id',
+                AllowedFilter::exact('section_id'),
+                AllowedFilter::exact('education_level_id'),
                 AllowedFilter::callback('from_date', function(Builder $query, $value){}),
                 AllowedFilter::callback('to_date', function(Builder $query, $value){}),
                 AllowedFilter::callback('search', function(Builder $query, $value){
